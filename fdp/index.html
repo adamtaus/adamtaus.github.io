@@ -1,0 +1,559 @@
+﻿<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>FDP kalkulačka</title>
+
+  <meta name="theme-color" content="#004289" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="FDP kalkulačka" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <link rel="manifest" href="manifest.json" />
+
+  <style>
+    :root {
+      --brand-blue: #004289;
+      --brand-orange: #f28e00;
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #1c2430;
+      --muted: #6b7787;
+      --line: #d9e1ea;
+      --soft-blue: #eaf2fb;
+      --soft-orange: #fff3e3;
+      --danger: #c62828;
+      --success: #18794e;
+      --shadow: 0 10px 24px rgba(0, 66, 137, 0.08);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      padding: 16px 16px 28px;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .app-header { margin: 4px 0 18px; }
+
+    .title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--brand-blue);
+      margin: 0;
+      letter-spacing: 0.2px;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      margin-bottom: 14px;
+      border: 1px solid rgba(0, 66, 137, 0.06);
+    }
+
+    .section-title {
+      margin: 0 0 14px;
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--brand-blue);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    @media (min-width: 640px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+    }
+
+    .input-block {
+      display: grid;
+      gap: 12px;
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      appearance: none;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+      color: var(--text);
+      font-size: 16px;
+      padding: 14px 14px;
+      min-height: 52px;
+      outline: none;
+    }
+
+    .field input:focus,
+    .field select:focus {
+      border-color: var(--brand-blue);
+      box-shadow: 0 0 0 3px rgba(0, 66, 137, 0.12);
+    }
+
+    .segmented {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .segmented input { display: none; }
+
+    .segmented label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-weight: 800;
+      color: var(--brand-blue);
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+      padding: 0 10px;
+    }
+
+    .segmented input:checked + label {
+      background: var(--brand-blue);
+      border-color: var(--brand-blue);
+      color: #fff;
+    }
+
+    .hint {
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    .subpanel {
+      display: none;
+      margin-top: 6px;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px dashed rgba(0, 66, 137, 0.2);
+      background: #f8fbff;
+    }
+
+    .subpanel.visible {
+      display: block;
+    }
+
+    .nested-panel {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px dashed rgba(0, 66, 137, 0.14);
+    }
+
+    .btn {
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      min-height: 56px;
+      background: var(--brand-orange);
+      color: #fff;
+      font-weight: 800;
+      font-size: 17px;
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(242, 142, 0, 0.22);
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .results {
+      display: grid;
+      gap: 12px;
+    }
+
+    .result-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    @media (min-width: 640px) {
+      .result-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .result-box {
+      border-radius: 14px;
+      padding: 12px;
+      background: var(--soft-blue);
+      border: 1px solid rgba(0, 66, 137, 0.08);
+    }
+
+    .result-box.orange {
+      background: var(--soft-orange);
+      border-color: rgba(242, 142, 0, 0.16);
+    }
+
+    .result-label {
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .result-value {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--brand-blue);
+      line-height: 1.2;
+    }
+
+    .orange .result-value { color: #9a5a00; }
+
+    .result-sub {
+      margin-top: 6px;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .small-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    @media (min-width: 640px) {
+      .small-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    .mini {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .mini .k {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--muted);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+
+    .mini .v {
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1.2;
+    }
+
+    .mini .subv {
+      margin-top: 4px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .status {
+      padding: 12px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.45;
+      border: 1px solid transparent;
+    }
+
+    .status.warn {
+      background: #fff8e8;
+      color: #7a5600;
+      border-color: #f4d48f;
+    }
+
+    .status.bad {
+      background: #fff0f0;
+      color: var(--danger);
+      border-color: #f2c0c0;
+    }
+
+    .status.good {
+      background: #ecfaf2;
+      color: var(--success);
+      border-color: #bfe6cf;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <h1 class="title">FDP kalkulačka</h1>
+    <p class="subtitle">
+      Zadávej v lokálním čase v místě reportingu. Ve výsledcích uvidíš LT i UTC.
+    </p>
+  </header>
+
+  <section class="card">
+    <h2 class="section-title">Vstupy</h2>
+
+    <div class="grid grid-2">
+      <div class="field">
+        <label for="report">Reporting time LT</label>
+        <input type="time" id="report" value="12:20" />
+      </div>
+
+      <div class="field">
+        <label>Posun vůči UTC</label>
+        <div style="display:grid; grid-template-columns: 1fr 120px; gap:10px;">
+          <select id="utcOffsetHours">
+            <option value="-12">UTC-12</option>
+            <option value="-11">UTC-11</option>
+            <option value="-10">UTC-10</option>
+            <option value="-9">UTC-9</option>
+            <option value="-8">UTC-8</option>
+            <option value="-7">UTC-7</option>
+            <option value="-6">UTC-6</option>
+            <option value="-5">UTC-5</option>
+            <option value="-4">UTC-4</option>
+            <option value="-3">UTC-3</option>
+            <option value="-2">UTC-2</option>
+            <option value="-1">UTC-1</option>
+            <option value="0">UTC±0</option>
+            <option value="1">UTC+1</option>
+            <option value="2" selected>UTC+2</option>
+            <option value="3">UTC+3</option>
+            <option value="4">UTC+4</option>
+            <option value="5">UTC+5</option>
+            <option value="6">UTC+6</option>
+            <option value="7">UTC+7</option>
+            <option value="8">UTC+8</option>
+            <option value="9">UTC+9</option>
+            <option value="10">UTC+10</option>
+            <option value="11">UTC+11</option>
+            <option value="12">UTC+12</option>
+            <option value="13">UTC+13</option>
+            <option value="14">UTC+14</option>
+          </select>
+
+          <select id="utcOffsetHalf">
+            <option value="0" selected>+0 min</option>
+            <option value="30">+30 min</option>
+          </select>
+        </div>
+        <div class="hint">Např. Indie +30 min.</div>
+      </div>
+
+      <div class="field">
+        <label for="sectors">Počet sektorů</label>
+        <select id="sectors">
+          <option value="1">1</option>
+          <option value="2" selected>2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+          <option value="5">5</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Typ služby</label>
+        <div class="segmented">
+          <div>
+            <input type="radio" id="service-normal" name="serviceType" value="normal" checked />
+            <label for="service-normal">Základní</label>
+          </div>
+          <div>
+            <input type="radio" id="service-extended" name="serviceType" value="extended" />
+            <label for="service-extended">Extended „e“</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="input-block">
+        <div class="field">
+          <label>Přišla zpráva o zpoždění letu?</label>
+          <div class="segmented">
+            <div>
+              <input type="radio" id="delay-no" name="hasDelayMessage" value="no" checked />
+              <label for="delay-no">Ne</label>
+            </div>
+            <div>
+              <input type="radio" id="delay-yes" name="hasDelayMessage" value="yes" />
+              <label for="delay-yes">Ano</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="field subpanel" id="delayFields">
+          <label for="delayDuration">Doba zpoždění</label>
+          <input type="time" id="delayDuration" value="00:00" />
+
+          <div style="height:10px;"></div>
+
+          <label for="firstDelayMessageTime">Čas 1. zprávy</label>
+          <input type="time" id="firstDelayMessageTime" value="10:00" />
+
+          <div class="nested-panel">
+            <label>Přišla 2. zpráva?</label>
+            <div class="segmented">
+              <div>
+                <input type="radio" id="second-delay-no" name="hasSecondDelayMessage" value="no" checked />
+                <label for="second-delay-no">Ne</label>
+              </div>
+              <div>
+                <input type="radio" id="second-delay-yes" name="hasSecondDelayMessage" value="yes" />
+                <label for="second-delay-yes">Ano</label>
+              </div>
+            </div>
+
+            <div id="secondDelayFields" class="nested-panel" style="display:none; margin-top:10px;">
+              <label for="secondDelayMessageTime">Čas 2. zprávy</label>
+              <input type="time" id="secondDelayMessageTime" value="11:00" />
+            </div>
+          </div>
+
+          <div class="hint">
+            1. zpráva se použije jen pokud přišla alespoň 90 minut před původním reportingem.
+          </div>
+        </div>
+      </div>
+
+      <div class="input-block">
+        <div class="field">
+          <label>Byl před reportingem SBY?</label>
+          <div class="segmented">
+            <div>
+              <input type="radio" id="sby-no" name="hasSby" value="no" checked />
+              <label for="sby-no">Ne</label>
+            </div>
+            <div>
+              <input type="radio" id="sby-yes" name="hasSby" value="yes" />
+              <label for="sby-yes">Ano</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="field subpanel" id="sbyFields">
+          <label for="sbyStart">Začátek SBY</label>
+          <input type="time" id="sbyStart" value="00:00" />
+
+          <div class="nested-panel">
+            <label>Byl hovor z plánování?</label>
+            <div class="segmented">
+              <div>
+                <input type="radio" id="planning-call-no" name="usePlanningCall" value="no" checked />
+                <label for="planning-call-no">Ne</label>
+              </div>
+              <div>
+                <input type="radio" id="planning-call-yes" name="usePlanningCall" value="yes" />
+                <label for="planning-call-yes">Ano</label>
+              </div>
+            </div>
+
+            <div id="planningCallFields" class="nested-panel" style="display:none; margin-top:10px;">
+              <label for="sbyCallTime">Čas hovoru z plánování</label>
+              <input type="time" id="sbyCallTime" value="00:00" />
+
+              <div class="hint">
+                Pokud hovor spadá mezi 23:00–07:00, od tohoto času do reportingu se vše počítá jako denní držení.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="lastLeg">Doba letu posledního sektoru</label>
+        <input type="time" id="lastLeg" value="02:04" />
+      </div>
+
+      <div class="field">
+        <label for="taxi">Taxi-in</label>
+        <input type="time" id="taxi" value="00:10" />
+      </div>
+    </div>
+
+    <div style="margin-top: 14px;">
+      <button class="btn" id="calculateBtn">Spočítat</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2 class="section-title">Výsledky</h2>
+
+    <div class="results">
+      <div class="result-grid">
+        <div class="result-box">
+          <div class="result-label">Maximální FDP</div>
+          <div class="result-value" id="maxFdp">--:--</div>
+          <div class="result-sub" id="fdpEndText">Konec duty: --:-- LT/--:-- UTC</div>
+        </div>
+
+        <div class="result-box orange">
+          <div class="result-label">Maximální FDP s kapitánským prodloužením</div>
+          <div class="result-value" id="maxFdpCaptain">--:--</div>
+          <div class="result-sub" id="fdpEndCaptainText">Konec duty: --:-- LT/--:-- UTC</div>
+        </div>
+      </div>
+
+      <div class="small-grid">
+        <div class="mini">
+          <div class="k">Latest take-off</div>
+          <div class="v" id="latestDeparture">--:-- LT</div>
+          <div class="subv" id="latestDepartureUtc">--:-- UTC</div>
+        </div>
+
+        <div class="mini">
+          <div class="k">Latest take-off s kapitánským prodloužením</div>
+          <div class="v" id="latestDepartureCaptain">--:-- LT</div>
+          <div class="subv" id="latestDepartureCaptainUtc">--:-- UTC</div>
+        </div>
+      </div>
+
+      <div class="status warn" id="infoBox">
+        Vyplň údaje a klikni na Spočítat.
+      </div>
+    </div>
+
+    <div class="footer-note">
+      Vytvořil Adam Tauš. Nejedná se o oficiální nástroj společnosti. Vždy si ověř správnost výsledku.
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
