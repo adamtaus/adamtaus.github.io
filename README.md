@@ -1,1 +1,0 @@
-# adamtaus.github.io
