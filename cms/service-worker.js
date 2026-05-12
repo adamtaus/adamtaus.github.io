@@ -1,6 +1,6 @@
 const CACHE_NAME = "crew-medical-support-v2";
 const APP_SHELL = [
-  "./cms.html",
+  "./index.html",
   "./manifest.webmanifest",
   "./icon-cms.png",
   "./icon-cms-192.png",
