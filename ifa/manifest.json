@@ -1,0 +1,25 @@
+{
+  "name": "In-flight asistent",
+  "short_name": "IFA",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f7fb",
+  "theme_color": "#004289",
+  "icons": [
+    {
+      "src": "icon-ifa.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-ifa.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-ifa.png",
+      "sizes": "600x600",
+      "type": "image/png"
+    }
+  ]
+}
