@@ -1,0 +1,25 @@
+{
+  "name": "Crew Medical Support",
+  "short_name": "CMS",
+  "description": "Offline medical support reference for crew.",
+  "start_url": "./cms.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7fafc",
+  "theme_color": "#0d4f8b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icon-cms-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-cms-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

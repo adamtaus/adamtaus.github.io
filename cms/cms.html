@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0d4f8b" />
+  <meta name="application-name" content="Crew Medical Support" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Crew Medical Support" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <title>Crew Medical Support</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon-cms-192.png" sizes="192x192" type="image/png" />
+  <link rel="apple-touch-icon" href="icon-cms-192.png" />
+
+  <style>
+    :root {
+      --blue: #0d4f8b;
+      --blue-dark: #09365f;
+      --blue-soft: #eaf3fb;
+      --orange: #f28c28;
+      --orange-dark: #d66f0d;
+      --orange-soft: #fff3e7;
+      --ink: #17324a;
+      --muted: #5f7387;
+      --line: #d7e3ef;
+      --bg: #f7fafc;
+      --white: #ffffff;
+      --danger: #c73a2d;
+      --ok: #2f7a45;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top right, rgba(242,140,40,0.08), transparent 24%),
+        linear-gradient(180deg, #fbfdff 0%, #f3f8fc 100%);
+      line-height: 1.45;
+      overflow-x: hidden;
+      word-wrap: break-word;
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 28px;
+      width: 100%;
+    }
+
+    .hero {
+      background: linear-gradient(135deg, var(--blue-dark), var(--blue));
+      color: var(--white);
+      border-radius: 24px;
+      padding: 34px 34px 28px;
+      box-shadow: 0 18px 50px rgba(9,54,95,0.18);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: auto -50px -50px auto;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(242,140,40,0.14);
+      filter: blur(4px);
+      display: none;
+    }
+
+    .eyebrow {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0 0 10px;
+      font-size: clamp(30px, 4vw, 44px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      max-width: 760px;
+      color: rgba(255,255,255,0.88);
+      font-size: 16px;
+      margin: 0;
+    }
+
+    .meta {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 54px;
+      text-align: center;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.08);
+      color: var(--white);
+      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 13px;
+      font-weight: 700;
+      max-width: 100%;
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+    }
+
+    .pill:hover,
+    .pill:focus-visible {
+      background: rgba(255,255,255,0.16);
+      border-color: rgba(255,255,255,0.35);
+      transform: translateY(-1px);
+      outline: none;
+    }
+
+    .pill.menu-pill {
+      min-height: 64px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 1.25;
+    }
+
+    .note {
+      margin-top: 22px;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 20px;
+    }
+
+    .note-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 10px 26px rgba(14,46,77,0.06);
+      min-width: 0;
+    }
+
+    .note-card h2,
+    .section h2 {
+      margin: 0 0 14px;
+      font-size: clamp(22px, 3vw, 28px);
+      line-height: 1.15;
+      color: var(--blue-dark);
+    }
+
+    .section {
+      margin-top: 26px;
+      min-width: 0;
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4 {
+      display: grid;
+      gap: 18px;
+    }
+
+    .grid-2 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 24px rgba(14,46,77,0.05);
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      color: var(--blue-dark);
+      font-size: 18px;
+    }
+
+    .mini {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .tag {
+      display: block;
+      width: fit-content;
+      max-width: 100%;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--orange-soft);
+      color: var(--orange-dark);
+      font-size: clamp(16px, 2vw, 20px);
+      line-height: 1.2;
+      font-weight: 800;
+      margin-bottom: 14px;
+      letter-spacing: -0.01em;
+    }
+
+    .tag.blue {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .danger-box {
+      background: linear-gradient(180deg, #fff6f5 0%, #fff 100%);
+      border-left: 6px solid var(--danger);
+    }
+
+    .ok-box {
+      background: linear-gradient(180deg, #f6fbf7 0%, #fff 100%);
+      border-left: 6px solid var(--ok);
+    }
+
+    .measure {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .measure .item {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 14px;
+      min-width: 0;
+    }
+
+    .measure strong {
+      display: block;
+      font-size: 24px;
+      color: var(--blue-dark);
+      margin-top: 4px;
+    }
+
+    .cpr {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .cpr .item {
+      background: linear-gradient(180deg, var(--orange-soft), #fff);
+      border: 1px solid #f8d7b4;
+      border-radius: 18px;
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .cpr .ratio {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--orange-dark);
+      margin-top: 6px;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      border-radius: 18px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 560px;
+      border-collapse: collapse;
+      font-size: 14px;
+      background: var(--white);
+      border-radius: 18px;
+    }
+
+
+    table.med-table col:first-child {
+      width: 260px;
+    }
+
+    table.med-table td:first-child,
+    table.med-table th:first-child {
+      white-space: nowrap;
+      word-break: normal;
+    }
+
+    table.med-table.wide-first col:first-child {
+      width: 340px;
+    }
+
+    table.conditions-table {
+      min-width: 980px;
+    }
+
+    table.conditions-table col:nth-child(1) {
+      width: 180px;
+    }
+
+    table.conditions-table col:nth-child(2) {
+      width: 390px;
+    }
+
+    table.conditions-table col:nth-child(3) {
+      width: 410px;
+    }
+
+    table.conditions-table td:first-child,
+    table.conditions-table th:first-child {
+      min-width: 180px;
+      white-space: normal;
+      word-break: normal;
+      overflow-wrap: normal;
+      hyphens: none;
+    }
+
+    table.conditions-table td:nth-child(2),
+    table.conditions-table th:nth-child(2) {
+      min-width: 390px;
+    }
+
+    table.conditions-table td:nth-child(3),
+    table.conditions-table th:nth-child(3) {
+      min-width: 410px;
+    }
+
+    table.conditions-table th,
+    table.conditions-table td {
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    table.conditions-table td:nth-child(3),
+    table.conditions-table th:nth-child(3) {
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    th, td {
+      text-align: left;
+      vertical-align: top;
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--line);
+      word-break: break-word;
+    }
+
+    th {
+      background: var(--blue-soft);
+      color: var(--blue-dark);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      position: sticky;
+      top: 0;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    ul {
+      margin: 10px 0 0 18px;
+      padding: 0;
+    }
+
+    li + li { margin-top: 6px; }
+
+    .footer {
+      margin-top: 28px;
+      padding: 18px 20px;
+      color: var(--muted);
+      font-size: 13px;
+      background: rgba(255,255,255,0.65);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+    }
+
+    .muted {
+      color: var(--muted);
+    }
+
+    .headline-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .kicker {
+      color: var(--orange-dark);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .back-to-top {
+      position: fixed;
+      right: max(18px, env(safe-area-inset-right));
+      bottom: max(18px, env(safe-area-inset-bottom));
+      z-index: 20;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border: 1px solid rgba(255,255,255,0.54);
+      border-radius: 50%;
+      background: rgba(13,79,139,0.92);
+      color: var(--white);
+      box-shadow: 0 14px 34px rgba(9,54,95,0.24);
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px) scale(0.94);
+      transition: opacity 0.18s ease, transform 0.18s ease, background 0.18s ease;
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+    }
+
+    .back-to-top.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .back-to-top:hover,
+    .back-to-top:focus-visible {
+      background: var(--blue-dark);
+      transform: translateY(-2px) scale(1);
+      outline: none;
+    }
+
+    .back-to-top:focus-visible {
+      box-shadow: 0 0 0 4px rgba(242,140,40,0.28), 0 14px 34px rgba(9,54,95,0.24);
+    }
+
+    .back-to-top svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    @media (max-width: 980px) {
+      .note,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .measure,
+      .cpr {
+        grid-template-columns: 1fr;
+      }
+
+      .meta {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      .wrap {
+        padding: 14px;
+      }
+
+      .hero {
+        border-radius: 18px;
+        padding: 22px 18px 18px;
+      }
+
+      .hero::after {
+        width: 150px;
+        height: 150px;
+        inset: auto -35px -35px auto;
+      }
+
+      .meta {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .pill {
+        min-height: 50px;
+        font-size: 13px;
+        padding: 8px 10px;
+      }
+
+      .pill.menu-pill {
+        min-height: 58px;
+        font-size: 12px;
+      }
+
+      .note-card,
+      .card {
+        padding: 16px;
+        border-radius: 16px;
+      }
+
+      .headline-row {
+        align-items: flex-start;
+        margin-bottom: 12px;
+      }
+
+      .measure strong,
+      .cpr .ratio {
+        font-size: 24px;
+      }
+
+      table {
+        min-width: 520px;
+        font-size: 13px;
+      }
+
+      table.conditions-table {
+        min-width: 980px;
+      }
+
+      table.conditions-table th,
+      table.conditions-table td {
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      table.conditions-table td:nth-child(3),
+      table.conditions-table th:nth-child(3) {
+        font-size: 13px;
+      }
+
+      th, td {
+        padding: 10px 9px;
+      }
+    }
+
+    @media (max-width: 520px) {
+      h1 {
+        font-size: 28px;
+      }
+
+      .note-card h2,
+      .section h2 {
+        font-size: 24px;
+      }
+
+      .tag {
+        font-size: 20px;
+        width: 100%;
+        border-radius: 16px;
+      }
+
+      .meta {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .pill,
+      .pill.menu-pill {
+        width: 100%;
+      }
+
+      table.med-table col:first-child,
+      table.med-table.wide-first col:first-child {
+        width: 240px;
+      }
+
+      table {
+        min-width: 460px;
+      }
+
+      table.conditions-table {
+        min-width: 980px;
+      }
+
+      .footer {
+        padding: 16px;
+      }
+
+      .back-to-top {
+        right: max(14px, env(safe-area-inset-right));
+        bottom: max(14px, env(safe-area-inset-bottom));
+        width: 44px;
+        height: 44px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .back-to-top {
+        transition: none;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+      .wrap {
+        max-width: none;
+        padding: 0;
+      }
+      .hero, .card, .note-card, .footer {
+        box-shadow: none;
+      }
+      .section, .card, .note-card, .hero {
+        break-inside: avoid;
+      }
+      .table-wrap {
+        overflow: visible;
+      }
+      table {
+        min-width: 0;
+      }
+      th {
+        position: static;
+      }
+      .back-to-top {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="eyebrow">04/2025</div>
+      <h1>Crew Medical Support</h1>
+
+      <div class="meta">
+        <a class="pill" href="#first-steps">Nezapomeň</a>
+        <a class="pill" href="#doctor-call">Vyvolej doktora</a>
+        <a class="pill" href="#cpr">CPR</a>
+        <a class="pill" href="#measurements">Základní měření</a>
+        <a class="pill menu-pill" href="#kit-first-aid">First Aid Kit</a>
+        <a class="pill menu-pill" href="#kit-emergency">Emergency Medical Kit</a>
+        <a class="pill menu-pill" href="#kit-additional">First Aid Additional Equipment Kit</a>
+        <a class="pill" href="#conditions">Nejčastější stavy</a>
+      </div>
+    </section>
+
+    <section class="section note">
+      <div class="note-card danger-box" id="first-steps">
+        <h2>Nezapomeň</h2>
+        <ul>
+          <li>Vyvolej lékaře a informuj posádku.</li>
+          <li>Záklon hlavy a kontrola dýchání.</li>
+          <li>Před podáním kyslíku otři ústa a ověř proudění.</li>
+          <li>U mrtvice si zapiš čas prvních příznaků.</li>
+          <li>U epilepsie měř délku záchvatu.</li>
+        </ul>
+      </div>
+      <div class="note-card ok-box" id="doctor-call">
+        <h2>Vyvolej doktora</h2>
+        <p><strong>CZ:</strong> Vážení cestující, jeden z našich cestujících potřebuje lékařskou pomoc. Pokud se na palubě nachází lékař, případně jiný zdravotnický personál, prosíme, aby okamžitě kontaktoval posádku.</p>
+        <p><strong>EN:</strong> Dear passengers, one of our passengers needs medical assistance. If there is a doctor, nurse or paramedic on board, please contact our cabin crew immediately.</p>
+      </div>
+    </section>
+
+    <section class="section card" id="cpr">
+      <div class="headline-row">
+        <div>
+          <h2>CPR</h2>
+        </div>
+      </div>
+      <div class="cpr">
+        <div class="item">
+          <h3>Dospělý</h3>
+          <div>5 vdechů</div>
+          <div class="ratio">30:2</div>
+        </div>
+        <div class="item">
+          <h3>Dítě 0–8 let</h3>
+          <div>5 vdechů</div>
+          <div class="ratio">15:2</div>
+        </div>
+        <div class="item">
+          <h3>Novorozenec</h3>
+          <div>5 vdechů</div>
+          <div class="ratio">3:1</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card" id="measurements">
+      <div class="headline-row">
+        <div>
+          <h2>Základní měření</h2>
+        </div>
+      </div>
+      <div class="measure">
+        <div class="item">
+          <h3>Tlak</h3>
+          <strong>± 120/80</strong>
+        </div>
+        <div class="item">
+          <h3>Cukr</h3>
+          <strong>3,6–6,6 mmol/l</strong>
+          <div class="mini">do 12  ještě tolerovatelné</div>
+        </div>
+        <div class="item">
+          <h3>Saturace</h3>
+          <strong>&gt; 90 %</strong>
+        </div>
+      </div>
+    </section>
+
+
+
+    <section class="section grid-2">
+      <div class="card" id="kit-first-aid">
+        <div>
+          <h2>First Aid Kit</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="med-table">
+            <colgroup><col><col><col></colgroup>
+            <thead>
+              <tr><th>Co?</th><th>Kdy?</th><th>Kdy ne?</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Ibumax 200 mg<br>(Ibalgin, Ibuprofen)</td><td>Zánětlivá onemocnění, bolest, migréna.</td><td>Onemocnění trávicího traktu, alergie.</td></tr>
+              <tr><td>Paralen 500 mg<br>(Paracetamol)</td><td>Akutní horečka, bolest zubů a hlavy.</td><td>Onemocnění jater.</td></tr>
+              <tr><td>Valetol<br>(Propyfenazol)</td><td>Bolest zubů, hlavy, zánět HCD.</td><td>Onemocnění jater, dušnost.</td></tr>
+              <tr><td>Kinedryl</td><td>Kinetóza.</td><td>Intoxikace, těhotenství.</td></tr>
+              <tr><td>Rennie<br>(Uhličitan vápenatý)</td><td>Nauzea, zvracení, pálení žáhy.</td><td>Do 15 let.</td></tr>
+              <tr><td>Endiaron<br>(Kloroxin)</td><td>Silné průjmy.</td><td>Do 40 kg.</td></tr>
+              <tr><td>Dithiaden</td><td>Alergická reakce, kopřivka, mírné otoky.</td><td>Do 2 let.</td></tr>
+              <tr><td>Grandaxin</td><td>Strach, neurotické stavy, deprese.</td><td>Do 18 let.</td></tr>
+              <tr><td>Diazepam</td><td>Úzkost, abstinenční příznaky, po epilepsii.</td><td>Intoxikace, spánková apnoe.</td></tr>
+              <tr><td>Guajacuran</td><td>Celkové napětí a stres.</td><td>Do 6 let, těhotenství.</td></tr>
+              <tr><td>Gelitaspon<br>(Sugaspon)</td><td>Zástava krvácení z nosu.</td><td>—</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="kit-emergency">
+        <div>
+          <h2>Emergency Medical Kit</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="med-table">
+            <colgroup><col><col><col></colgroup>
+            <thead>
+              <tr><th>Co?</th><th>Kdy?</th><th>Kdy ne?</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Nitromint sprej</td><td>Záchvat anginy pectoris.</td><td>Tlak pod 120/70.</td></tr>
+              <tr><td>Epipen<br>(jen lékař nebo pacient sám)</td><td>Anafylaxe.</td><td></td></tr>
+              <tr><td>Berodual sprej</td><td>Astma, zúžení dýchacích cest.</td><td>—</td></tr>
+              <tr><td>Fyziologický roztok (NaCl 0,9 %)</td><td>Ředění, výplach, popáleniny.</td><td>—</td></tr>
+              <tr><td>+ tonometr, glukometr, oxymetr</td><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card" id="kit-additional">
+        <div>
+          <h2>First Aid Additional Equipment Kit</h2>
+        </div>
+        <div class="table-wrap">
+          <table class="med-table wide-first">
+            <colgroup><col><col><col></colgroup>
+            <thead>
+              <tr><th>Co?</th><th>Kdy?</th><th>Kdy ne?</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Occusept Aqua</td><td>Zklidnění očí, zánět spojivek, suché oči.</td><td>—</td></tr>
+              <tr><td>Paralen 100 mg</td><td>Viz Paralen. Pro děti, ve formě čípku.</td><td></td></tr>
+              <tr><td>Diazepam Desitin Rectal</td><td>Viz Diazepam, gel pro rektální podání.</td><td></td></tr>
+              <tr><td>Acylpyrin 500 mg</td><td>Infarkt.</td><td>Do 16 let, alergie na kys. acetylsalicylovou.</td></tr>
+              <tr><td>WaterJel</td><td>Ošetření popálenin.</td><td>Malé děti – riziko podchlazení.</td></tr>
+              <tr><td>+ inf. ambuvak, inf. maska, porodnický balíček</td><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="section card" id="conditions">
+      <div class="headline-row">
+        <div>
+          <h2>Nejčastější stavy a řešení</h2>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="conditions-table">
+          <colgroup>
+            <col>
+            <col>
+            <col>
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Problém</th>
+              <th>Příznaky</th>
+              <th>Řešení</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Hyperventilace</td><td>Rychlé dýchání, brnění končetin a obličeje, málo CO₂.</td><td>Ne kyslík. Guajacuran/Diazepam. Dýchání přes sáček.</td></tr>
+            <tr><td>Nízký tlak</td><td>Slabost, závrať, zvracení, bledost, nižší tlak.</td><td>Nohy nahoru, voda, cola, chladit. Doporučit nevzít dřív antihypertenziva.</td></tr>
+            <tr><td>Hypoxie</td><td>Dušnost, únava, zmatenost, cyanóza.</td><td>Kyslík, monitorování saturace, případně léky dle příčiny.</td></tr>
+            <tr><td>Nevolnost/kinetóza</td><td>Nauzea, bolest hlavy, malátnost.</td><td>Ne kyslík. Kinedryl, zázvor, cola.</td></tr>
+            <tr><td>Astma</td><td>Sípání, kašel, sevřený hrudník, těžké dýchání.</td><td>Inhalátor, kyslík, klid, čerstvý vzduch.</td></tr>
+            <tr><td>Anafylaxe</td><td>Svědění, kopřivka, otok, dušnost, porucha vědomí.</td><td>Vždy vyvolat lékaře. Dithiaden. EpiPen jen lékař nebo pacient sám.</td></tr>
+            <tr><td>Epilepsie</td><td>Křeče, záškuby, krátká ztráta vědomí. Po záchvatu může následovat 10–20 minut bezvědomí nebo hlubokého spánku.</td><td>Zajistit bezpečí, odstranit předměty, Diazepam/Guajacuran, sledovat po záchvatu.</td></tr>
+            <tr><td>Hypoglykémie</td><td>Třes, pocení, nervozita, závratě, nízký cukr.</td><td>Glukóza, sladký nápoj nebo cukrovinky, při vědomí i malé sacharidové jídlo.</td></tr>
+            <tr><td>Hyperglykémie</td><td>Žízeň, sucho v ústech, únava, acetonový dech.</td><td>Tekutiny, inzulín pokud je předepsán, při zhoršení lékař.</td></tr>
+            <tr><td>Trombóza</td><td>Otok končetiny, bolest, zarudnutí, horká kůže.</td><td>Zavolat lékaře, případně léky na ředění krve, nehýbat končetinou.</td></tr>
+            <tr><td>Angina pectoris</td><td>Bolest/tlak na hrudi, dušnost, únava.</td><td>Nitroglycerin / Nitromint dle dávkování, kyslík podle potřeby.</td></tr>
+            <tr><td>Embolie</td><td>Náhlá dušnost, kašel s krví, bolest na hrudi, cyanóza.</td><td>Kyslík, lékař, klidový režim, případně antikoagulace.</td></tr>
+            <tr><td>Infarkt</td><td>Tlak na hrudi, nevolnost, studený pot, závratě.</td><td>Aspirin/Acylpyrin, kyslík, lékař, připravit CPR.</td></tr>
+            <tr><td>Mrtvice</td><td>Slabost, porucha řeči, koordinace, citlivosti.</td><td>Zavolat lékaře, zapsat čas, okamžitě přistát, nepodávat léky, BE FAST.</td></tr>
+            <tr><td>Zástava krvácení</td><td>Masivní krvácení, pokles TK, rychlý puls.</td><td>Komprese, tlakový obvaz, klid, zvednout končetinu, lékař.</td></tr>
+            <tr><td>Uzávěr dýchacích cest</td><td>Kašel, sípání, promodrávání.</td><td>Podpora kašle, údery mezi lopatky, Heimlich 5×, pak CPR.</td></tr>
+            <tr><td>Popáleniny</td><td>Zarudnutí, puchýře, zčernání kůže.</td><td>Chladit vodou/NaCl/WaterJel, nic nepřikládat, monitoruji → hrozí šok.<br>Dlaň = 1 %. Při poranění nad 10 % → vážné (u dětí 5 %).<br>Při popálení hlavy a dýchacích cest → vážné.</td></tr>
+            <tr><td>Úpal/úžeh</td><td>Malátnost, bolest hlavy, přehřátí.</td><td>Ochladit, chladivé obklady, tekutiny, monitorovat.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="footer">
+      Nejedná se o oficiální dokument kontrolovaný společností.
+      Vytvořili: Tereza Shromáždilová, Adam Tauš
+    </div>
+  </div>
+  <button class="back-to-top" type="button" aria-label="Zpět nahoru" title="Zpět nahoru">
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 19V5"></path>
+      <path d="m5 12 7-7 7 7"></path>
+    </svg>
+  </button>
+  <script>
+    const backToTopButton = document.querySelector(".back-to-top");
+    const toggleBackToTopButton = () => {
+      backToTopButton.classList.toggle("is-visible", window.scrollY > 420);
+    };
+
+    backToTopButton.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    window.addEventListener("scroll", toggleBackToTopButton, { passive: true });
+    toggleBackToTopButton();
+
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./service-worker.js").catch(() => {
+          // Offline support is optional when the page is opened from an unsupported context.
+        });
+      });
+    }
+  </script>
+</body>
+</html>
