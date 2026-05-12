@@ -38,11 +38,11 @@ self.addEventListener("fetch", (event) => {
         .then((networkResponse) => {
           const responseCopy = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put("./cms.html", responseCopy);
+            cache.put("./index.html", responseCopy);
           });
           return networkResponse;
         })
-        .catch(() => caches.match("./cms.html"))
+        .catch(() => caches.match("./index.html"))
     );
     return;
   }
@@ -61,7 +61,7 @@ self.addEventListener("fetch", (event) => {
           });
           return networkResponse;
         })
-        .catch(() => caches.match("./cms.html"));
+        .catch(() => caches.match("./index.html"));
     })
   );
 });
