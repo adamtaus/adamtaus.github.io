@@ -4,22 +4,21 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Smartcrew aplikace</title>
-  <meta name="description" content="Rozcestník webových aplikací Smartcrew a návod pro instalaci" />
+  <meta name="description" content="Rozcestník webových aplikací Smartcrew a návod pro instalaci jako PWA na iOS." />
   <meta name="theme-color" content="#004289" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
   <meta name="apple-mobile-web-app-title" content="Smartcrew" />
 
   <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-8K2XQ1VC02"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8K2XQ1VC02"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag("js", new Date());
+    gtag("config", "G-8K2XQ1VC02");
+  </script>
 
-  gtag('config', 'G-8K2XQ1VC02');
-</script>
-  
   <style>
     :root {
       --blue: #004289;
@@ -389,11 +388,11 @@
 
     <section class="section" aria-labelledby="apps-title">
       <div class="section-head">
-        <h2 id="apps-title">Vyberte aplikaci</h2>
+        <h2 id="apps-title">Vyber aplikaci</h2>
       </div>
 
       <div class="app-grid">
-        <a class="app-card" href="https://smartcrew.cz/fdp/">
+        <a class="app-card" href="https://smartcrew.cz/fdp/" data-app-name="FDP kalkulačka">
           <div>
             <span class="icon" aria-hidden="true"><img src="icon-fdp.png" alt="" /></span>
             <h3>FDP kalkulačka</h3>
@@ -405,7 +404,7 @@
           </div>
         </a>
 
-        <a class="app-card" href="https://smartcrew.cz/cms/">
+        <a class="app-card" href="https://smartcrew.cz/cms/" data-app-name="Crew Medical Support">
           <div>
             <span class="icon" aria-hidden="true"><img src="icon-cms.png" alt="" /></span>
             <h3>Crew Medical Support</h3>
@@ -417,7 +416,7 @@
           </div>
         </a>
 
-        <a class="app-card" href="https://smartcrew.cz/ifa/">
+        <a class="app-card" href="https://smartcrew.cz/ifa/" data-app-name="In-Flight Asistent">
           <div>
             <span class="icon" aria-hidden="true"><img src="icon-ifa.png" alt="" /></span>
             <h3>In-Flight Asistent</h3>
@@ -431,7 +430,7 @@
       </div>
     </section>
 
-    <section class="section" id="ios" aria-labelledby="ios-title">
+       <section class="section" id="ios" aria-labelledby="ios-title">
       <div class="section-head">
         <h2 id="ios-title">Instalace pro offline použití</h2>
       </div>
@@ -440,31 +439,31 @@
         <ol class="steps">
           <li>
             <div>
-              <strong>Otevřete aplikaci v prohlížeči</strong>
-              <span>Klepněte na jeden z odkazů výše.</span>
+              <strong>Otevři aplikaci v prohlížeči</strong>
+              <span>Klepni na jeden z odkazů výše.</span>
             </div>
           </li>
           <li>
             <div>
-              <strong>Klepněte na tlačítko „Sdílet“</strong>
+              <strong>Klepni na tlačítko „Sdílet“</strong>
               <span>Je to ikona čtverce se šipkou nahoru.</span>
             </div>
           </li>
           <li>
             <div>
-              <strong>Zvolte „Přidat na plochu“</strong>
-              <span>V nabídce sjeďte níže a vyberte možnost „Přidat na plochu“.</span>
+              <strong>Zvol „Přidat na plochu“</strong>
+              <span>V nabídce sjeď níže a vyber možnost „Přidat na plochu“.</span>
             </div>
           </li>
           <li>
             <div>
-              <strong>Potvrďte název a přidejte</strong>
-              <span>Nechte předvyplněný název aplikace nebo ho upravte a klepněte na „Přidat“.</span>
+              <strong>Potvrď název a přidej</strong>
+              <span>Nech předvyplněný název aplikace nebo ho uprav a klepni na „Přidat“.</span>
             </div>
           </li>
             <li>
             <div>
-              <strong>Otevřete aplikaci na ploše a nechte načíst</strong>
+              <strong>Otevři aplikaci na ploše a nech načíst</strong>
               <span>Před použitím offline je potřeba aplikaci načíst.</span>
             </div>
           </li>
@@ -474,5 +473,40 @@
 
     
   </main>
+
+  <script>
+    const sendAnalyticsEvent = (eventName, params = {}) => {
+      if (typeof gtag !== "function") return;
+
+      gtag("event", eventName, {
+        ...params,
+        transport_type: "beacon"
+      });
+    };
+
+    document.querySelectorAll("[data-app-name]").forEach((link) => {
+      link.addEventListener("click", () => {
+        sendAnalyticsEvent("select_app", {
+          app_name: link.dataset.appName,
+          link_url: link.href
+        });
+      });
+    });
+
+    window.addEventListener("appinstalled", () => {
+      sendAnalyticsEvent("pwa_installed", {
+        app_name: "Smartcrew rozcestník"
+      });
+    });
+
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+
+    if (isStandalone && sessionStorage.getItem("pwa_standalone_open_sent") !== "1") {
+      sessionStorage.setItem("pwa_standalone_open_sent", "1");
+      sendAnalyticsEvent("pwa_standalone_open", {
+        app_name: "Smartcrew rozcestník"
+      });
+    }
+  </script>
 </body>
 </html>
