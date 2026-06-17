@@ -111,6 +111,8 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
 .swatch{width:14px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.08);flex:0 0 14px}
 .legend-panel{display:none;margin-top:10px}
 .legend-panel.open{display:block}
+.tool-section{margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--panel),var(--panel-soft));box-shadow:var(--shadow)}
+.tool-section h2,.tool-section h3{margin-top:0}
 .list{max-height:220px;overflow:auto}
 .list-item{padding:8px 10px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--panel);color:var(--text)}
 .delivery-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
@@ -232,8 +234,28 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
 .timer-display{font-size:1.2rem;font-weight:800;color:var(--heading);margin:6px 0}
 .timer-actions{display:flex;gap:8px;flex-wrap:wrap}
 .timer-actions button{flex:1 1 calc(50% - 4px)}
+.stock-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.stock-col{background:var(--panel-soft);border:1px solid var(--line);border-radius:14px;padding:10px}
+.stock-col h3{font-size:.88rem;margin:0 0 8px;color:var(--heading)}
+.stock-list{display:grid;gap:8px}
+.stock-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 8px;border-radius:10px;background:var(--panel)}
+.stock-name{font-size:.84rem;font-weight:700;color:var(--text)}
+.stock-value{min-width:48px;text-align:right;font-weight:800;color:var(--heading)}
+.stock-editor{display:flex;align-items:center;gap:8px}
+.stock-btn{width:30px;height:30px;padding:0;border-radius:9px;background:var(--panel-soft);color:var(--text);border:1px solid var(--line);font-weight:900}
+.stock-btn:disabled{opacity:.45;cursor:not-allowed}
+.stock-input{width:64px;text-align:center;border:1px solid var(--line);border-radius:10px;padding:6px 4px;background:var(--panel);color:var(--text);font-weight:800;-moz-appearance:textfield}
+.stock-input::-webkit-outer-spin-button,.stock-input::-webkit-inner-spin-button{margin:0;-webkit-appearance:none}
+.stock-hint{margin-top:8px;font-size:.78rem;color:var(--muted)}
+.stock-summary{margin-top:10px;padding:9px 10px;border-radius:12px;background:var(--panel-soft);border:1px dashed var(--line);font-size:.82rem;color:var(--text)}
+.adjust-box{background:var(--panel-soft);border:1px solid var(--line);border-radius:14px;padding:12px}
+.adjust-qty{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px}
+.adjust-number{width:72px;text-align:center;font-size:1.1rem;font-weight:900;color:var(--heading);border:1px solid var(--line);border-radius:10px;padding:7px 6px;background:var(--panel);-moz-appearance:textfield}
+.adjust-number::-webkit-outer-spin-button,.adjust-number::-webkit-inner-spin-button{margin:0;-webkit-appearance:none}
+.collapsible-hidden{display:none}
 @media (max-width:640px){
   .timer-grid{grid-template-columns:1fr}
+  .stock-grid{grid-template-columns:1fr}
 }
 
 </style>
@@ -298,6 +320,7 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
     </div>
 
     <div class="card">
+      <h2>Panel nástrojů</h2>
       <div class="row">
         <button id="rotateBtn" class="warn">Otočit mapu</button>
         <button id="toggle6defBtn" class="secondary">Zobrazit 6DEF</button>
@@ -307,8 +330,17 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
         <button id="themeBtn" class="secondary">Tmavý režim</button>
         <button id="legendToggleBtn" class="secondary">Legenda</button>
       </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <button id="toggleSeatSearchBtn" class="secondary">Vyhledání sedadla</button>
+        <button id="toggleLegendCodesBtn" class="secondary">Zkratky cateringu</button>
+      </div>
+      <div style="height:8px"></div>
+      <div class="row">
+        <button id="toggleFreshStockBtn" class="secondary">Sklad freshů</button>
+      </div>
       <div id="legendPanel" class="legend-panel">
-        <div style="height:10px"></div>
+        <div id="legendContent" class="tool-section collapsible-hidden">
         <h2>Legenda</h2>
         <div class="legend-grid">
           <div class="legend-item"><span class="swatch" style="background:var(--seat)"></span> běžné sedadlo</div>
@@ -322,7 +354,38 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
           <div class="legend-item"><span class="swatch" style="background:var(--disabled)"></span> neaktivní 6DEF</div>
         </div>
 
-        <div style="height:12px"></div>
+        </div>
+        <div id="freshStockPanel" class="tool-section collapsible-hidden">
+          <div class="stock-grid">
+            <div class="stock-col">
+              <h3>Sklad freshů</h3>
+              <div class="stock-list" id="stockStockListPanel"></div>
+            </div>
+            <div class="stock-col">
+              <h3>K dispozici</h3>
+              <div class="stock-list" id="stockAvailableListPanel"></div>
+            </div>
+          </div>
+          <div class="stock-summary" id="stockSummaryPanel">Vyplň sklad freshů. K dispozici se bude počítat automaticky podle prodaných kusů.</div>
+          <div class="stock-hint">Pokud necháš vše na nule, sklad se nebude hlídat.</div>
+        </div>
+        <div id="seatSearchPanel" class="tool-section collapsible-hidden">
+          <h2>Vyhledání sedadla</h2>
+          <div class="search-grid">
+            <input id="seatRowInput" type="tel" inputmode="numeric" pattern="[0-9]*" />
+            <div class="search-action"><button id="findBtn" class="ghost">Najít</button></div>
+          </div>
+          <div class="letter-picker" id="letterPicker">
+            <button type="button" class="secondary letter-btn" data-letter="A">A</button>
+            <button type="button" class="secondary letter-btn" data-letter="B">B</button>
+            <button type="button" class="secondary letter-btn" data-letter="C">C</button>
+            <button type="button" class="secondary letter-btn" data-letter="D">D</button>
+            <button type="button" class="secondary letter-btn" data-letter="E">E</button>
+            <button type="button" class="secondary letter-btn" data-letter="F">F</button>
+          </div>
+          <input id="seatLetterInput" type="hidden" />
+        </div>
+        <div id="legendCodesContent" class="tool-section collapsible-hidden">
         <h2>Zkratky pro extra catering</h2>
         <div class="code-help">
           <table style="width:100%;border-collapse:collapse;font-size:.9rem;">
@@ -493,6 +556,7 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
 </tr>
           </table>
         </div>
+        </div>
       </div>
       <div style="height:10px"></div>
       <div class="row">
@@ -501,35 +565,10 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
       </div>
       <div style="height:8px"></div>
       <div class="row">
+        <button id="newLegBtn" class="warn">Nový leg</button>
         <button id="clearBtn" class="danger">Vymazat vše</button>
       </div>
       <input type="file" id="importFile" accept=".json" style="display:none" />
-    </div>
-
-    <div class="card">
-      <h2>Vyhledání sedadla</h2>
-      <div class="search-grid">
-        <input id="seatRowInput" type="tel" inputmode="numeric" pattern="[0-9]*" />
-        <div class="search-action"><button id="findBtn" class="ghost">Najít</button></div>
-      </div>
-      <div class="letter-picker" id="letterPicker">
-        <button type="button" class="secondary letter-btn" data-letter="A">A</button>
-        <button type="button" class="secondary letter-btn" data-letter="B">B</button>
-        <button type="button" class="secondary letter-btn" data-letter="C">C</button>
-        <button type="button" class="secondary letter-btn" data-letter="D">D</button>
-        <button type="button" class="secondary letter-btn" data-letter="E">E</button>
-        <button type="button" class="secondary letter-btn" data-letter="F">F</button>
-      </div>
-      <input id="seatLetterInput" type="hidden" />
-    </div>
-
-    <div class="card">
-      <h2>Souhrn</h2>
-      <div class="summary">
-        <div class="stat"><span class="muted">Special PAX</span><b id="countSpecialPax">0</b></div>
-        <div class="stat"><span class="muted">Extra catering</span><b id="countCatering">0</b></div>
-        <div class="stat"><span class="muted">Fresh produkty</span><b id="countFresh">0</b></div>
-      </div>
     </div>
 
     <div class="card">
@@ -666,6 +705,29 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
   </div>
 </div>
 
+<div class="modal" id="stockAdjustModal">
+  <div class="modal-box" style="width:min(460px,100%)">
+    <div class="row space-between" style="margin-bottom:12px;">
+      <h2>Nedostatek freshů</h2>
+    </div>
+    <div class="adjust-box">
+      <div id="stockAdjustMessage">Tolik toho u sebe nemáš.</div>
+      <div class="adjust-qty">
+        <button type="button" class="stock-btn" id="stockAdjustMinus">−</button>
+        <input type="number" min="1" step="1" class="adjust-number" id="stockAdjustQty" value="0" inputmode="numeric" />
+        <button type="button" class="stock-btn" id="stockAdjustPlus">+</button>
+      </div>
+      <div class="stock-hint">Přidej do skladu tolik kusů, kolik právě potřebuješ.</div>
+    </div>
+    <div class="sticky-actions">
+      <div class="row space-between">
+        <button id="cancelStockAdjust" class="ghost">Zrušit</button>
+        <button id="confirmStockAdjust">Přidat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 const ALL_ROWS = Array.from({length:34}, (_,i)=>i+1).filter(r => ![15,16].includes(r));
 const EXIT_ROWS = [17,18];
@@ -674,16 +736,100 @@ const FRESH_PRODUCTS = ['Panini', 'Wrap', 'Croque', 'Bloomer', 'Hot Dog', 'Pasta
 const CATERING_PRODUCTS = ['SLML', 'SMML', 'SNML', 'SOML', 'SYML', 'SZML'];
 const HIDDEN_SEATS = ['6D','6E','6F'];
 
-let state = { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', generalNote:'', reverse:false, dark:false, show6def:false, seats:{} };
+let state = { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshStock:{ total:{} }, seats:{} };
 let currentSeat = null;
 let currentSummaryMode = null;
 let currentSummaryType = null;
 let modalFresh = {};
 let modalCatering = {};
 let modalCustomCateringQty = 1;
+let pendingSeatSave = null;
+let stockAdjustQty = 0;
+let stockAdjustProduct = '';
 
 function seatKey(row, letter){ return `${row}${letter}`; }
 function blankSeatData(){ return { extraCatering:{}, deliveredCatering:{}, customCatering:'', specialPax:[], customPax:'', fresh:{}, deliveredFresh:{}, note:'' }; }
+function blankFreshStock(){ return { total:{} }; }
+function normalizeCountsObject(obj){
+  return Object.fromEntries(Object.entries(obj || {}).filter(([_,v]) => Number(v) > 0).map(([k,v]) => [k, Number(v)]));
+}
+function normalizeFreshStock(stock){
+  const base = {...blankFreshStock(), ...(stock || {})};
+  base.total = normalizeCountsObject(base.total);
+  return base;
+}
+function getFreshStockState(){
+  state.freshStock = normalizeFreshStock(state.freshStock);
+  return state.freshStock;
+}
+function freshStockTrackingEnabled(){
+  const stock = getFreshStockState();
+  return FRESH_PRODUCTS.some(name => Number((stock.total || {})[name] || 0) > 0);
+}
+function getSoldFreshCount(name){
+  return Object.values(state.seats || {}).reduce((sum, rawData) => {
+    const data = normalizeSeatData(rawData);
+    return sum + Number((data.fresh || {})[name] || 0);
+  }, 0);
+}
+function getAvailableFreshCount(name){
+  const stock = getFreshStockState();
+  const total = Number((stock.total || {})[name] || 0);
+  const sold = getSoldFreshCount(name);
+  if(total <= 0 && sold <= 0) return null;
+  return Math.max(0, total - sold);
+}
+function buildFreshDelta(nextFresh, prevFresh){
+  const delta = {};
+  FRESH_PRODUCTS.forEach(name => {
+    const diff = Number((nextFresh || {})[name] || 0) - Number((prevFresh || {})[name] || 0);
+    if(diff !== 0) delta[name] = diff;
+  });
+  return delta;
+}
+function getFreshShortage(delta){
+  if(!freshStockTrackingEnabled()) return null;
+  for(const name of FRESH_PRODUCTS){
+    const needed = Number((delta || {})[name] || 0);
+    if(needed <= 0) continue;
+    const available = Number(getAvailableFreshCount(name) || 0);
+    if(needed > available){
+      return { product:name, needed, available, missing: needed - available };
+    }
+  }
+  return null;
+}
+function persistStockOnly(){
+  state.freshStock = normalizeFreshStock(state.freshStock);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+function updateStockCount(name, diff){
+  const stock = getFreshStockState();
+  const target = stock.total;
+  const next = Math.max(0, Number(target[name] || 0) + Number(diff || 0));
+  if(next > 0) target[name] = next;
+  else delete target[name];
+  persistStockOnly();
+  renderAll();
+}
+function getModalFreshLimit(name){
+  if(!freshStockTrackingEnabled()) return Number.MAX_SAFE_INTEGER;
+  const previous = currentSeat ? getSeatData(currentSeat) : blankSeatData();
+  return Number((previous.fresh || {})[name] || 0) + Number(getAvailableFreshCount(name) || 0);
+}
+function trySetModalFreshQty(name, nextQty){
+  const normalized = Math.max(0, Number(nextQty) || 0);
+  const limit = getModalFreshLimit(name);
+  if(normalized > limit){
+    pendingSeatSave = { mode:'edit', product:name, targetQty: normalized };
+    openStockAdjustModal({ product:name, missing: normalized - limit });
+    return false;
+  }
+  if(normalized > 0) modalFresh[name] = normalized;
+  else delete modalFresh[name];
+  refreshModalProducts();
+  return true;
+}
 function clampDelivered(delivered, source){
   const normalized = {};
   Object.entries(source || {}).forEach(([name, qty]) => {
@@ -924,7 +1070,12 @@ function renderQtyProducts(containerId, products, dataObj, mode){
       }
       const name = btn.dataset.name;
       const target = btn.dataset.mode === 'fresh' ? modalFresh : modalCatering;
-      target[name] = Number(target[name] || 0) + (action === 'plus' ? 1 : -1);
+      const nextQty = Number(target[name] || 0) + (action === 'plus' ? 1 : -1);
+      if(btn.dataset.mode === 'fresh'){
+        trySetModalFreshQty(name, nextQty);
+        return;
+      }
+      target[name] = nextQty;
       if(target[name] <= 0) delete target[name];
       refreshModalProducts();
     });
@@ -959,6 +1110,99 @@ function addCustomCatering(){
   modalCustomCateringQty = 1;
   refreshModalProducts();
 }
+function renderFreshStockColumn(containerId, computed){
+  const box = document.getElementById(containerId);
+  if(!box) return;
+  const stock = getFreshStockState();
+  box.innerHTML = '';
+  FRESH_PRODUCTS.forEach(name => {
+    const div = document.createElement('div');
+    div.className = 'stock-item';
+    if(computed){
+      const total = Number((stock.total || {})[name] || 0);
+      const available = Number(getAvailableFreshCount(name) || 0);
+      const value = total <= 0 && available <= 0 ? '—' : `${available}/${total}`;
+      div.innerHTML = `<span class="stock-name">${escapeHtml(name)}</span><span class="stock-value">${value}</span>`;
+    } else {
+      const current = Number((stock.total || {})[name] || 0);
+      div.innerHTML = `
+        <span class="stock-name">${escapeHtml(name)}</span>
+        <div class="stock-editor">
+          <button type="button" class="stock-btn" data-stock-name="${escapeHtml(name)}" data-stock-diff="-1" ${current <= 0 ? 'disabled' : ''}>−</button>
+          <input class="stock-input" type="number" min="0" step="1" inputmode="numeric" pattern="[0-9]*" value="${current}" data-stock-input-name="${escapeHtml(name)}" />
+          <button type="button" class="stock-btn" data-stock-name="${escapeHtml(name)}" data-stock-diff="1">+</button>
+        </div>
+      `;
+    }
+    box.appendChild(div);
+  });
+  if(!computed){
+    box.querySelectorAll('[data-stock-input-name]').forEach(input => {
+      const commit = () => {
+        const name = input.dataset.stockInputName;
+        const current = Number((getFreshStockState().total || {})[name] || 0);
+        const next = Math.max(0, Number(input.value) || 0);
+        updateStockCount(name, next - current);
+      };
+      input.addEventListener('change', commit);
+      input.addEventListener('blur', commit);
+    });
+  }
+}
+function renderFreshStock(){
+  renderFreshStockColumn('stockStockListPanel', false);
+  renderFreshStockColumn('stockAvailableListPanel', true);
+  const summary = document.getElementById('stockSummaryPanel');
+  const card = document.getElementById('freshStockPanel');
+  const toggleBtn = document.getElementById('toggleFreshStockBtn');
+  if(card) card.classList.toggle('collapsible-hidden', !state.freshStockOpen);
+  if(toggleBtn) toggleBtn.textContent = state.freshStockOpen ? 'Skrýt sklad freshů' : 'Sklad freshů';
+  if(summary){
+    summary.textContent = freshStockTrackingEnabled()
+      ? 'K dispozici se počítá automaticky jako sklad mínus všechny prodané kusy.'
+      : 'Vyplň sklad freshů. Pokud necháš vše na nule, sklad se nebude kontrolovat.';
+  }
+}
+function refreshStockAdjustQty(){
+  const input = document.getElementById('stockAdjustQty');
+  if(input) input.value = String(stockAdjustQty);
+}
+function openStockAdjustModal(shortage){
+  stockAdjustProduct = shortage.product;
+  stockAdjustQty = Math.max(1, Number(shortage.missing || 1));
+  document.getElementById('stockAdjustMessage').textContent = `Tolik toho u sebe nemáš. Pro ${shortage.product} chybí ${shortage.missing} ks.`;
+  refreshStockAdjustQty();
+  document.getElementById('stockAdjustModal').classList.add('open');
+}
+function closeStockAdjustModal(clearPending = true){
+  if(clearPending) pendingSeatSave = null;
+  stockAdjustProduct = '';
+  stockAdjustQty = 0;
+  document.getElementById('stockAdjustModal').classList.remove('open');
+}
+function syncStockAdjustQtyFromInput(){
+  stockAdjustQty = Math.max(1, Number(document.getElementById('stockAdjustQty').value) || 1);
+  refreshStockAdjustQty();
+}
+function commitSeatSave(nextFresh){
+  const selectedPax = [...document.querySelectorAll('#specialPaxChecks input:checked')].map(cb => cb.value);
+  const previous = getSeatData(currentSeat);
+  const data = normalizeSeatData({
+    extraCatering: {...modalCatering},
+    deliveredCatering: previous.deliveredCatering || {},
+    customCatering: '',
+    specialPax: selectedPax,
+    customPax: document.getElementById('customPax').value.trim(),
+    fresh: {...nextFresh},
+    deliveredFresh: previous.deliveredFresh || {},
+    note: document.getElementById('seatNote').value.trim()
+  });
+  if(hasSeatData(data)) state.seats[currentSeat] = data;
+  else delete state.seats[currentSeat];
+  persist();
+  closeSeatModal();
+  renderAll();
+}
 
 function openSeatModal(key){
   currentSeat = key;
@@ -988,23 +1232,16 @@ function closeSeatModal(){
 
 function saveSeatData(){
   if(!currentSeat) return;
-  const selectedPax = [...document.querySelectorAll('#specialPaxChecks input:checked')].map(cb => cb.value);
   const previous = getSeatData(currentSeat);
-  const data = normalizeSeatData({
-    extraCatering: {...modalCatering},
-    deliveredCatering: previous.deliveredCatering || {},
-    customCatering: '',
-    specialPax: selectedPax,
-    customPax: document.getElementById('customPax').value.trim(),
-    fresh: {...modalFresh},
-    deliveredFresh: previous.deliveredFresh || {},
-    note: document.getElementById('seatNote').value.trim()
-  });
-  if(hasSeatData(data)) state.seats[currentSeat] = data;
-  else delete state.seats[currentSeat];
-  persist();
-  closeSeatModal();
-  renderAll();
+  const nextFresh = normalizeCountsObject({...modalFresh});
+  const delta = buildFreshDelta(nextFresh, previous.fresh || {});
+  const shortage = getFreshShortage(delta);
+  if(shortage){
+    pendingSeatSave = { nextFresh, delta };
+    openStockAdjustModal(shortage);
+    return;
+  }
+  commitSeatSave(nextFresh);
 }
 
 function deleteSeatData(){
@@ -1028,8 +1265,18 @@ function applyTheme(){
 function updateLegendPanel(){
   const panel = document.getElementById('legendPanel');
   const btn = document.getElementById('legendToggleBtn');
-  if(panel) panel.classList.toggle('open', !!state.legendOpen);
+  const legendCodesBtn = document.getElementById('toggleLegendCodesBtn');
+  const legendContent = document.getElementById('legendContent');
+  const legendCodesContent = document.getElementById('legendCodesContent');
+  const seatSearchPanel = document.getElementById('seatSearchPanel');
+  const seatSearchBtn = document.getElementById('toggleSeatSearchBtn');
+  if(panel) panel.classList.toggle('open', !!state.legendOpen || !!state.legendCodesOpen || !!state.freshStockOpen || !!state.seatSearchOpen);
+  if(legendContent) legendContent.classList.toggle('collapsible-hidden', !state.legendOpen);
+  if(legendCodesContent) legendCodesContent.classList.toggle('collapsible-hidden', !state.legendCodesOpen);
+  if(seatSearchPanel) seatSearchPanel.classList.toggle('collapsible-hidden', !state.seatSearchOpen);
   if(btn) btn.textContent = state.legendOpen ? 'Skrýt legendu' : 'Legenda';
+  if(legendCodesBtn) legendCodesBtn.textContent = state.legendCodesOpen ? 'Skrýt zkratky cateringu' : 'Zkratky cateringu';
+  if(seatSearchBtn) seatSearchBtn.textContent = state.seatSearchOpen ? 'Skrýt vyhledání sedadla' : 'Vyhledání sedadla';
 }
 
 function persist(){
@@ -1039,6 +1286,7 @@ function persist(){
   state.paxCount = document.getElementById('paxCount').value;
   state.startTime = document.getElementById('startTime').value;
   state.generalNote = document.getElementById('generalNote').value;
+  state.freshStock = normalizeFreshStock(state.freshStock);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
@@ -1047,7 +1295,7 @@ function loadState(){
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw){
       const parsed = JSON.parse(raw);
-      state = { flightNo: parsed.flightNo || '', routing: parsed.routing || '', flightTime: parsed.flightTime || '', paxCount: parsed.paxCount || '', startTime: parsed.startTime || '', generalNote: parsed.generalNote || '', reverse: !!parsed.reverse, dark: !!parsed.dark, show6def: !!parsed.show6def, legendOpen: !!parsed.legendOpen, seats: Object.fromEntries(Object.entries(parsed.seats || {}).map(([key, val]) => [key, normalizeSeatData(val)])) };
+      state = { flightNo: parsed.flightNo || '', routing: parsed.routing || '', flightTime: parsed.flightTime || '', paxCount: parsed.paxCount || '', startTime: parsed.startTime || '', generalNote: parsed.generalNote || '', reverse: !!parsed.reverse, dark: !!parsed.dark, show6def: !!parsed.show6def, legendOpen: !!parsed.legendOpen, legendCodesOpen: !!parsed.legendCodesOpen, freshStockOpen: !!parsed.freshStockOpen, seatSearchOpen: !!parsed.seatSearchOpen, freshStock: normalizeFreshStock(parsed.freshStock), seats: Object.fromEntries(Object.entries(parsed.seats || {}).map(([key, val]) => [key, normalizeSeatData(val)])) };
     }
   }catch(e){}
   document.getElementById('flightNo').value = state.flightNo;
@@ -1060,15 +1308,7 @@ function loadState(){
   updateLetterPicker();
 }
 
-function updateSummary(){
-  const entries = Object.values(state.seats);
-  document.getElementById('countSpecialPax').textContent = entries.reduce((sum, d) => {
-    const custom = (d.customPax || '').trim() ? 1 : 0;
-    return sum + (d.specialPax || []).length + custom;
-  }, 0);
-  document.getElementById('countCatering').textContent = entries.reduce((sum, d) => sum + totalCounts(normalizeSeatData(d).extraCatering), 0);
-  document.getElementById('countFresh').textContent = entries.reduce((sum, d) => sum + totalCounts(d.fresh), 0);
-}
+function updateSummary(){}
 
 function seatSort(a,b){
   const ra = parseInt(a,10), rb = parseInt(b,10);
@@ -1301,7 +1541,7 @@ function renderOpenSummaryIfNeeded(){
   if(currentSummaryMode === 'fresh' || currentSummaryMode === 'catering') openSummaryModal(currentSummaryMode);
   else if(currentSummaryMode === 'specialPax') openSpecialPaxSummaryModal();
 }
-function renderAll(){ applyTheme(); updateLegendPanel(); updateRotateBtn(); renderSeatMap(); updateSummary(); renderSpecialPaxList(); renderFreshList(); renderCateringList(); renderOpenSummaryIfNeeded(); }
+function renderAll(){ applyTheme(); updateLegendPanel(); updateRotateBtn(); renderSeatMap(); updateSummary(); renderFreshStock(); renderSpecialPaxList(); renderFreshList(); renderCateringList(); renderOpenSummaryIfNeeded(); }
 
 function exportJson(){
   persist();
@@ -1319,7 +1559,7 @@ function importJson(file){
   reader.onload = e => {
     try{
       const parsed = JSON.parse(e.target.result);
-      state = { flightNo: parsed.flightNo || '', routing: parsed.routing || '', flightTime: parsed.flightTime || '', paxCount: parsed.paxCount || '', startTime: parsed.startTime || '', generalNote: parsed.generalNote || '', reverse: !!parsed.reverse, dark: !!parsed.dark, show6def: !!parsed.show6def, legendOpen: !!parsed.legendOpen, seats: Object.fromEntries(Object.entries(parsed.seats || {}).map(([key, val]) => [key, normalizeSeatData(val)])) };
+      state = { flightNo: parsed.flightNo || '', routing: parsed.routing || '', flightTime: parsed.flightTime || '', paxCount: parsed.paxCount || '', startTime: parsed.startTime || '', generalNote: parsed.generalNote || '', reverse: !!parsed.reverse, dark: !!parsed.dark, show6def: !!parsed.show6def, legendOpen: !!parsed.legendOpen, legendCodesOpen: !!parsed.legendCodesOpen, freshStockOpen: !!parsed.freshStockOpen, seatSearchOpen: !!parsed.seatSearchOpen, freshStock: normalizeFreshStock(parsed.freshStock), seats: Object.fromEntries(Object.entries(parsed.seats || {}).map(([key, val]) => [key, normalizeSeatData(val)])) };
       document.getElementById('flightNo').value = state.flightNo;
       document.getElementById('routing').value = state.routing || '';
       document.getElementById('flightTime').value = state.flightTime || '';
@@ -1341,6 +1581,54 @@ function rotateMap(){ state.reverse = !state.reverse; persist(); renderAll(); }
 function toggleTheme(){ state.dark = !state.dark; persist(); renderAll(); }
 function toggle6def(){ state.show6def = !state.show6def; persist(); renderAll(); }
 function toggleLegend(){ state.legendOpen = !state.legendOpen; persist(); renderAll(); }
+function toggleLegendCodes(){ state.legendCodesOpen = !state.legendCodesOpen; persist(); renderAll(); }
+function toggleFreshStock(){ state.freshStockOpen = !state.freshStockOpen; persist(); renderAll(); }
+function toggleSeatSearch(){ state.seatSearchOpen = !state.seatSearchOpen; persist(); renderAll(); }
+function incrementFlightNumber(value){
+  const text = String(value || '').trim();
+  if(!text) return '';
+  const match = text.match(/^(.*?)(\d+)([^\d]*)$/);
+  if(!match) return text;
+  const [, prefix, digits, suffix] = match;
+  const next = String(Number(digits) + 1).padStart(digits.length, '0');
+  return `${prefix}${next}${suffix}`;
+}
+function reverseRouting(value){
+  const text = String(value || '').trim().toUpperCase();
+  if(!text) return '';
+  const parts = text.split(/[–-]/).map(part => part.trim()).filter(Boolean);
+  if(parts.length !== 2) return text;
+  return `${parts[1]}–${parts[0]}`;
+}
+function startNewLeg(){
+  if(!confirm('Opravdu chceš založit nový leg? Zachová se pouze Sklad freshů.')) return;
+  const preservedStock = normalizeFreshStock(state.freshStock);
+  const nextFlightNo = incrementFlightNumber(document.getElementById('flightNo').value);
+  const nextRouting = reverseRouting(document.getElementById('routing').value);
+
+  if(document.getElementById('seatModal').classList.contains('open')) closeSeatModal();
+  if(document.getElementById('summaryModal').classList.contains('open')) closeSummaryModal();
+  if(document.getElementById('stockAdjustModal').classList.contains('open')) closeStockAdjustModal(true);
+
+  state.flightNo = nextFlightNo;
+  state.routing = nextRouting;
+  state.flightTime = '';
+  state.paxCount = '';
+  state.startTime = '';
+  state.seats = {};
+  state.freshStock = preservedStock;
+
+  document.getElementById('flightNo').value = nextFlightNo;
+  document.getElementById('routing').value = nextRouting;
+  document.getElementById('flightTime').value = '';
+  document.getElementById('paxCount').value = '';
+  document.getElementById('startTime').value = '';
+
+  resetCountdown();
+  resetStopwatch();
+  persist();
+  renderAll();
+}
 
 function buildSeatFromInputs(){
   const row = (document.getElementById('seatRowInput').value || '').replace(/\D/g,'');
@@ -1472,6 +1760,10 @@ function loadSample(){
     dark:false,
     show6def:false,
     legendOpen:false,
+    legendCodesOpen:false,
+    freshStockOpen:false,
+    seatSearchOpen:false,
+    freshStock:{ total:{ Panini:8, Wrap:6, Croque:4, Bloomer:6, 'Hot Dog':5, Pasta:4, Pork:3, Bageta:7 } },
     seats:{
       "1A": {extraCatering:{"SLML":1}, customCatering:'', specialPax:["INF"], customPax:'', fresh:{}, note:'rodina s dítětem'},
       "4C": {extraCatering:{}, customCatering:'', specialPax:["WCHR"], customPax:'', fresh:{}, note:'pomoc při deboardingu'},
@@ -1497,13 +1789,52 @@ document.getElementById('saveSeatData').addEventListener('click', saveSeatData);
 document.getElementById('deleteSeatData').addEventListener('click', deleteSeatData);
 document.getElementById('themeBtn').addEventListener('click', toggleTheme);
 document.getElementById('legendToggleBtn').addEventListener('click', toggleLegend);
+document.getElementById('toggleLegendCodesBtn').addEventListener('click', toggleLegendCodes);
 document.getElementById('toggle6defBtn').addEventListener('click', toggle6def);
+document.getElementById('toggleFreshStockBtn').addEventListener('click', toggleFreshStock);
+document.getElementById('toggleSeatSearchBtn').addEventListener('click', toggleSeatSearch);
+document.getElementById('newLegBtn').addEventListener('click', startNewLeg);
 document.getElementById('freshSummaryBtn').addEventListener('click', () => openSummaryModal('fresh'));
 document.getElementById('cateringSummaryBtn').addEventListener('click', () => openSummaryModal('catering'));
 document.getElementById('specialPaxSummaryBtn').addEventListener('click', openSpecialPaxSummaryModal);
 document.getElementById('closeSummaryModal').addEventListener('click', closeSummaryModal);
+document.getElementById('cancelStockAdjust').addEventListener('click', () => closeStockAdjustModal(true));
+document.getElementById('stockAdjustMinus').addEventListener('click', () => {
+  stockAdjustQty = Math.max(1, stockAdjustQty - 1);
+  refreshStockAdjustQty();
+});
+document.getElementById('stockAdjustPlus').addEventListener('click', () => {
+  stockAdjustQty += 1;
+  refreshStockAdjustQty();
+});
+document.getElementById('stockAdjustQty').addEventListener('input', syncStockAdjustQtyFromInput);
+document.getElementById('stockAdjustQty').addEventListener('change', syncStockAdjustQtyFromInput);
+document.getElementById('stockAdjustQty').addEventListener('blur', syncStockAdjustQtyFromInput);
+document.getElementById('confirmStockAdjust').addEventListener('click', () => {
+  if(!pendingSeatSave || !stockAdjustProduct) return;
+  updateStockCount(stockAdjustProduct, stockAdjustQty);
+  alert(`Do skladu bylo přidáno ${stockAdjustQty} ks produktu ${stockAdjustProduct}.`);
+  if(pendingSeatSave.mode === 'edit'){
+    const targetQty = Number(pendingSeatSave.targetQty || 0);
+    const product = pendingSeatSave.product;
+    closeStockAdjustModal(false);
+    pendingSeatSave = null;
+    trySetModalFreshQty(product, targetQty);
+    return;
+  }
+  const shortage = getFreshShortage(pendingSeatSave.delta);
+  if(shortage){
+    openStockAdjustModal(shortage);
+    return;
+  }
+  const nextFresh = {...pendingSeatSave.nextFresh};
+  closeStockAdjustModal(false);
+  pendingSeatSave = null;
+  commitSeatSave(nextFresh);
+});
 document.getElementById('seatModal').addEventListener('click', e => { if(e.target.id === 'seatModal') closeSeatModal(); });
 document.getElementById('summaryModal').addEventListener('click', e => { if(e.target.id === 'summaryModal') closeSummaryModal(); });
+document.getElementById('stockAdjustModal').addEventListener('click', e => { if(e.target.id === 'stockAdjustModal') closeStockAdjustModal(true); });
 document.getElementById('flightNo').addEventListener('input', e => {
   e.target.value = e.target.value.toUpperCase();
   persist();
@@ -1572,6 +1903,12 @@ document.getElementById('generalNote').addEventListener('input', persist);
 document.getElementById('rotateBtn').addEventListener('click', rotateMap);
 document.getElementById('findBtn').addEventListener('click', jumpToSeat);
 document.addEventListener('click', e => {
+  const stockBtn = e.target.closest('[data-stock-name][data-stock-diff]');
+  if(stockBtn){
+    updateStockCount(stockBtn.dataset.stockName, Number(stockBtn.dataset.stockDiff || 0));
+    return;
+  }
+
   const chip = e.target.closest('.delivery-chip');
   if(chip){
     toggleDeliveredItem(
@@ -1617,12 +1954,13 @@ document.addEventListener('keydown', e => {
   if(e.key === 'Escape'){
     if(document.getElementById('seatModal').classList.contains('open')) closeSeatModal();
     if(document.getElementById('summaryModal').classList.contains('open')) closeSummaryModal();
+    if(document.getElementById('stockAdjustModal').classList.contains('open')) closeStockAdjustModal(true);
   }
 });
 
 document.getElementById('clearBtn').addEventListener('click', () => {
   if(confirm('Opravdu vymazat všechna data?')){
-    state = { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, seats:{} };
+    state = { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshStock:{ total:{} }, seats:{} };
     document.getElementById('flightNo').value = '';
     document.getElementById('routing').value = '';
     document.getElementById('flightTime').value = '';
