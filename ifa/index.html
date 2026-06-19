@@ -736,7 +736,7 @@ const FRESH_PRODUCTS = ['Panini', 'Wrap', 'Croque', 'Bloomer', 'Hot Dog', 'Pasta
 const CATERING_PRODUCTS = ['SLML', 'SMML', 'SNML', 'SOML', 'SYML', 'SZML'];
 const HIDDEN_SEATS = ['6D','6E','6F'];
 
-let state = { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshStock:{ total:{} }, seats:{} };
+let state = { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshOrderCounter:0, freshStock:{ total:{}, sold:{} }, seats:{} };
 let currentSeat = null;
 let currentSummaryMode = null;
 let currentSummaryType = null;
@@ -748,14 +748,15 @@ let stockAdjustQty = 0;
 let stockAdjustProduct = '';
 
 function seatKey(row, letter){ return `${row}${letter}`; }
-function blankSeatData(){ return { extraCatering:{}, deliveredCatering:{}, customCatering:'', specialPax:[], customPax:'', fresh:{}, deliveredFresh:{}, note:'' }; }
-function blankFreshStock(){ return { total:{} }; }
+function blankSeatData(){ return { extraCatering:{}, deliveredCatering:{}, customCatering:'', specialPax:[], customPax:'', fresh:{}, deliveredFresh:{}, freshOrder:null, note:'' }; }
+function blankFreshStock(){ return { total:{}, sold:{} }; }
 function normalizeCountsObject(obj){
   return Object.fromEntries(Object.entries(obj || {}).filter(([_,v]) => Number(v) > 0).map(([k,v]) => [k, Number(v)]));
 }
 function normalizeFreshStock(stock){
   const base = {...blankFreshStock(), ...(stock || {})};
   base.total = normalizeCountsObject(base.total);
+  base.sold = normalizeCountsObject(base.sold);
   return base;
 }
 function getFreshStockState(){
@@ -767,10 +768,12 @@ function freshStockTrackingEnabled(){
   return FRESH_PRODUCTS.some(name => Number((stock.total || {})[name] || 0) > 0);
 }
 function getSoldFreshCount(name){
-  return Object.values(state.seats || {}).reduce((sum, rawData) => {
+  const stock = getFreshStockState();
+  const currentSeatsSold = Object.values(state.seats || {}).reduce((sum, rawData) => {
     const data = normalizeSeatData(rawData);
     return sum + Number((data.fresh || {})[name] || 0);
   }, 0);
+  return Number((stock.sold || {})[name] || 0) + currentSeatsSold;
 }
 function getAvailableFreshCount(name){
   const stock = getFreshStockState();
@@ -798,6 +801,16 @@ function getFreshShortage(delta){
     }
   }
   return null;
+}
+function getSeatFreshTotals(){
+  const totals = {};
+  Object.values(state.seats || {}).forEach(rawData => {
+    const data = normalizeSeatData(rawData);
+    Object.entries(data.fresh || {}).forEach(([name, qty]) => {
+      totals[name] = Number(totals[name] || 0) + Number(qty || 0);
+    });
+  });
+  return totals;
 }
 function persistStockOnly(){
   state.freshStock = normalizeFreshStock(state.freshStock);
@@ -851,11 +864,45 @@ function normalizeSeatData(data){
   base.extraCatering = Object.fromEntries(Object.entries(base.extraCatering || {}).filter(([_,v]) => Number(v) > 0));
   base.deliveredFresh = clampDelivered(base.deliveredFresh, base.fresh);
   base.deliveredCatering = clampDelivered(base.deliveredCatering, base.extraCatering);
+  base.freshOrder = Number.isFinite(Number(base.freshOrder)) ? Number(base.freshOrder) : null;
+  if(!hasCounts(base.fresh)) base.freshOrder = null;
   return base;
+}
+function normalizeSeatsWithFreshOrder(seats){
+  const normalizedSeats = {};
+  let maxFreshOrder = 0;
+
+  Object.entries(seats || {}).forEach(([key, val]) => {
+    const data = normalizeSeatData(val);
+    if(Number.isFinite(Number(data.freshOrder))){
+      maxFreshOrder = Math.max(maxFreshOrder, Number(data.freshOrder));
+    }
+    normalizedSeats[key] = data;
+  });
+
+  Object.keys(normalizedSeats).forEach(key => {
+    const data = normalizedSeats[key];
+    if(hasCounts(data.fresh) && !Number.isFinite(Number(data.freshOrder))){
+      maxFreshOrder += 1;
+      data.freshOrder = maxFreshOrder;
+    }
+  });
+
+  return { seats: normalizedSeats, freshOrderCounter: maxFreshOrder };
 }
 function getSeatData(key){ return normalizeSeatData(state.seats[key]); }
 function hasCounts(obj){ return Object.values(obj || {}).some(v => Number(v) > 0); }
 function totalCounts(obj){ return Object.values(obj || {}).reduce((a,b) => a + (Number(b) || 0), 0); }
+function nextFreshOrder(){
+  state.freshOrderCounter = Number(state.freshOrderCounter || 0) + 1;
+  return state.freshOrderCounter;
+}
+function freshOrderSort(a,b){
+  const ao = Number.isFinite(Number(a.data.freshOrder)) ? Number(a.data.freshOrder) : Number.MAX_SAFE_INTEGER;
+  const bo = Number.isFinite(Number(b.data.freshOrder)) ? Number(b.data.freshOrder) : Number.MAX_SAFE_INTEGER;
+  if(ao !== bo) return ao - bo;
+  return seatSort(a.seat, b.seat);
+}
 function hasSeatData(data){
   return hasCounts(data.extraCatering) || !!(data.customCatering || '').trim() || (data.specialPax || []).length > 0 || !!(data.customPax || '').trim() || hasCounts(data.fresh) || !!(data.note || '').trim();
 }
@@ -1187,6 +1234,10 @@ function syncStockAdjustQtyFromInput(){
 function commitSeatSave(nextFresh){
   const selectedPax = [...document.querySelectorAll('#specialPaxChecks input:checked')].map(cb => cb.value);
   const previous = getSeatData(currentSeat);
+  let freshOrder = previous.freshOrder;
+  if(hasCounts(nextFresh) && !hasCounts(previous.fresh || {})){
+    freshOrder = nextFreshOrder();
+  }
   const data = normalizeSeatData({
     extraCatering: {...modalCatering},
     deliveredCatering: previous.deliveredCatering || {},
@@ -1195,6 +1246,7 @@ function commitSeatSave(nextFresh){
     customPax: document.getElementById('customPax').value.trim(),
     fresh: {...nextFresh},
     deliveredFresh: previous.deliveredFresh || {},
+    freshOrder,
     note: document.getElementById('seatNote').value.trim()
   });
   if(hasSeatData(data)) state.seats[currentSeat] = data;
@@ -1295,7 +1347,8 @@ function loadState(){
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw){
       const parsed = JSON.parse(raw);
-      state = { flightNo: parsed.flightNo || '', routing: parsed.routing || '', flightTime: parsed.flightTime || '', paxCount: parsed.paxCount || '', startTime: parsed.startTime || '', generalNote: parsed.generalNote || '', reverse: !!parsed.reverse, dark: !!parsed.dark, show6def: !!parsed.show6def, legendOpen: !!parsed.legendOpen, legendCodesOpen: !!parsed.legendCodesOpen, freshStockOpen: !!parsed.freshStockOpen, seatSearchOpen: !!parsed.seatSearchOpen, freshStock: normalizeFreshStock(parsed.freshStock), seats: Object.fromEntries(Object.entries(parsed.seats || {}).map(([key, val]) => [key, normalizeSeatData(val)])) };
+      const normalized = normalizeSeatsWithFreshOrder(parsed.seats || {});
+      state = { flightNo: parsed.flightNo || '', routing: parsed.routing || '', flightTime: parsed.flightTime || '', paxCount: parsed.paxCount || '', startTime: parsed.startTime || '', generalNote: parsed.generalNote || '', reverse: !!parsed.reverse, dark: !!parsed.dark, show6def: !!parsed.show6def, legendOpen: !!parsed.legendOpen, legendCodesOpen: !!parsed.legendCodesOpen, freshStockOpen: !!parsed.freshStockOpen, seatSearchOpen: !!parsed.seatSearchOpen, freshOrderCounter: Math.max(Number(parsed.freshOrderCounter || 0), normalized.freshOrderCounter), freshStock: normalizeFreshStock(parsed.freshStock), seats: normalized.seats };
     }
   }catch(e){}
   document.getElementById('flightNo').value = state.flightNo;
@@ -1342,7 +1395,7 @@ function renderFreshList(){
   const items = Object.entries(state.seats)
     .map(([seat,d]) => ({ seat, data: normalizeSeatData(d) }))
     .filter(x => hasCounts(x.data.fresh))
-    .sort((a,b) => seatSort(a.seat,b.seat));
+    .sort(freshOrderSort);
 
   if(!items.length){ box.innerHTML = '<div class="muted">Zatím nic.</div>'; return; }
   items.forEach(item => {
@@ -1448,7 +1501,7 @@ function openSummaryModal(type){
   totalBox.innerHTML = `<div class="summary-row-head"><strong>Celkem:</strong></div><div>${totalSummary ? escapeHtml(totalSummary) : 'Zatím nic.'}</div>`;
   content.appendChild(totalBox);
 
-  rows.sort((a,b) => seatSort(a.seat,b.seat));
+  rows.sort(type === 'fresh' ? freshOrderSort : (a,b) => seatSort(a.seat,b.seat));
   rows.forEach(item => {
     const chips = buildDeliveryChips(type, item.seat, item.source, item.delivered);
     const allDone = isAllDelivered(item.source, item.delivered);
@@ -1559,7 +1612,8 @@ function importJson(file){
   reader.onload = e => {
     try{
       const parsed = JSON.parse(e.target.result);
-      state = { flightNo: parsed.flightNo || '', routing: parsed.routing || '', flightTime: parsed.flightTime || '', paxCount: parsed.paxCount || '', startTime: parsed.startTime || '', generalNote: parsed.generalNote || '', reverse: !!parsed.reverse, dark: !!parsed.dark, show6def: !!parsed.show6def, legendOpen: !!parsed.legendOpen, legendCodesOpen: !!parsed.legendCodesOpen, freshStockOpen: !!parsed.freshStockOpen, seatSearchOpen: !!parsed.seatSearchOpen, freshStock: normalizeFreshStock(parsed.freshStock), seats: Object.fromEntries(Object.entries(parsed.seats || {}).map(([key, val]) => [key, normalizeSeatData(val)])) };
+      const normalized = normalizeSeatsWithFreshOrder(parsed.seats || {});
+      state = { flightNo: parsed.flightNo || '', routing: parsed.routing || '', flightTime: parsed.flightTime || '', paxCount: parsed.paxCount || '', startTime: parsed.startTime || '', generalNote: parsed.generalNote || '', reverse: !!parsed.reverse, dark: !!parsed.dark, show6def: !!parsed.show6def, legendOpen: !!parsed.legendOpen, legendCodesOpen: !!parsed.legendCodesOpen, freshStockOpen: !!parsed.freshStockOpen, seatSearchOpen: !!parsed.seatSearchOpen, freshOrderCounter: Math.max(Number(parsed.freshOrderCounter || 0), normalized.freshOrderCounter), freshStock: normalizeFreshStock(parsed.freshStock), seats: normalized.seats };
       document.getElementById('flightNo').value = state.flightNo;
       document.getElementById('routing').value = state.routing || '';
       document.getElementById('flightTime').value = state.flightTime || '';
@@ -1601,8 +1655,9 @@ function reverseRouting(value){
   return `${parts[1]}–${parts[0]}`;
 }
 function startNewLeg(){
-  if(!confirm('Opravdu chceš založit nový leg? Zachová se pouze Sklad freshů.')) return;
+  if(!confirm('Opravdu chceš založit nový leg? Zachová se Sklad freshů i dosud prodané kusy.')) return;
   const preservedStock = normalizeFreshStock(state.freshStock);
+  const soldThisLeg = getSeatFreshTotals();
   const nextFlightNo = incrementFlightNumber(document.getElementById('flightNo').value);
   const nextRouting = reverseRouting(document.getElementById('routing').value);
 
@@ -1616,6 +1671,10 @@ function startNewLeg(){
   state.paxCount = '';
   state.startTime = '';
   state.seats = {};
+  Object.entries(soldThisLeg).forEach(([name, qty]) => {
+    preservedStock.sold[name] = Number(preservedStock.sold[name] || 0) + Number(qty || 0);
+  });
+  preservedStock.sold = normalizeCountsObject(preservedStock.sold);
   state.freshStock = preservedStock;
 
   document.getElementById('flightNo').value = nextFlightNo;
@@ -1960,7 +2019,7 @@ document.addEventListener('keydown', e => {
 
 document.getElementById('clearBtn').addEventListener('click', () => {
   if(confirm('Opravdu vymazat všechna data?')){
-    state = { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshStock:{ total:{} }, seats:{} };
+    state = { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshOrderCounter:0, freshStock:{ total:{} }, seats:{} };
     document.getElementById('flightNo').value = '';
     document.getElementById('routing').value = '';
     document.getElementById('flightTime').value = '';
