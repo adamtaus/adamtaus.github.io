@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1f6fb2">
+<meta name="description" content="Piškvorky s leteckou tématikou – hraj proti kamarádovi nebo počítači, uprav si vzhled i pravidla hry.">
+<title>Piškvorky: Vzdušný souboj</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-theme="day">
+
+<div class="sky-layer" aria-hidden="true">
+  <div class="stars"></div>
+  <div class="sun-moon"></div>
+  <div class="cloud cloud--1"></div>
+  <div class="cloud cloud--2"></div>
+  <div class="cloud cloud--3"></div>
+  <div class="cloud cloud--4"></div>
+  <div class="flying-plane"></div>
+</div>
+
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand__badge" viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="32" cy="32" r="30" fill="var(--badge-bg)" stroke="var(--badge-ring)" stroke-width="3"/>
+        <path d="M32 10 L36 28 L54 32 L36 36 L32 54 L28 36 L10 32 L28 28 Z" fill="var(--badge-mark)"/>
+      </svg>
+      <div class="brand__text">
+        <h1>Piškvorky<span>Vzdušný souboj</span></h1>
+      </div>
+    </div>
+    <div class="topbar__actions">
+      <button id="btnInstall" class="icon-btn icon-btn--hidden" title="Nainstalovat aplikaci" aria-label="Nainstalovat aplikaci">⤓</button>
+      <button id="btnSettings" class="icon-btn" title="Nastavení" aria-label="Otevřít nastavení">⚙</button>
+    </div>
+  </header>
+
+  <section class="scoreboard" id="scoreboard">
+    <div class="score-card score-card--x" id="scoreCardX">
+      <div class="score-card__icon" id="scoreIconX"></div>
+      <div class="score-card__info">
+        <span class="score-card__name" id="scoreNameX">Hráč 1</span>
+        <span class="score-card__value" id="scoreValueX">0</span>
+      </div>
+    </div>
+
+    <div class="score-card score-card--mid">
+      <span class="score-card__label">Remízy</span>
+      <span class="score-card__value" id="scoreValueDraw">0</span>
+    </div>
+
+    <div class="score-card score-card--o" id="scoreCardO">
+      <div class="score-card__info score-card__info--right">
+        <span class="score-card__name" id="scoreNameO">Hráč 2</span>
+        <span class="score-card__value" id="scoreValueO">0</span>
+      </div>
+      <div class="score-card__icon" id="scoreIconO"></div>
+    </div>
+  </section>
+
+  <p class="status-banner" id="statusBanner" role="status" aria-live="polite">Táhne Hráč 1</p>
+
+  <main class="board-wrap">
+    <div class="board" id="board" role="grid"></div>
+  </main>
+
+  <div class="controls">
+    <button id="btnNewGame" class="btn btn--primary">Nová hra</button>
+    <button id="btnResetScore" class="btn btn--ghost">Vynulovat skóre</button>
+  </div>
+
+  <footer class="app-footer">
+    <span>Vyrobeno pro milovníky letectví a piškvorek ✈</span>
+  </footer>
+</div>
+
+<!-- Settings modal -->
+<div class="modal-overlay" id="settingsOverlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="modal__header">
+      <h2 id="settingsTitle">Nastavení letu</h2>
+      <button class="icon-btn" id="btnCloseSettings" aria-label="Zavřít nastavení">✕</button>
+    </div>
+
+    <div class="modal__body">
+
+      <section class="settings-section">
+        <h3>Hráči</h3>
+        <label class="field">
+          <span>Jméno hráče 1 (stíhačka)</span>
+          <input type="text" id="inputNameX" maxlength="16" placeholder="Hráč 1">
+        </label>
+        <label class="field">
+          <span>Jméno hráče 2</span>
+          <input type="text" id="inputNameO" maxlength="16" placeholder="Hráč 2">
+        </label>
+
+        <label class="field">
+          <span>Herní režim</span>
+          <select id="selectMode">
+            <option value="pvp">Dva hráči</option>
+            <option value="pvc">Proti počítači</option>
+          </select>
+        </label>
+
+        <label class="field" id="fieldAiSide">
+          <span>Počítač hraje za</span>
+          <select id="selectAiSide">
+            <option value="O">Hráče 2</option>
+            <option value="X">Hráče 1</option>
+          </select>
+        </label>
+
+        <label class="field" id="fieldDifficulty">
+          <span>Obtížnost počítače</span>
+          <select id="selectDifficulty">
+            <option value="easy">Nováček</option>
+            <option value="medium">Pilot</option>
+            <option value="hard">Eso</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Kdo létá první</span>
+          <select id="selectStarting">
+            <option value="X">Hráč 1</option>
+            <option value="O">Hráč 2</option>
+            <option value="alternate">Střídat po hrách</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="settings-section">
+        <h3>Hrací plocha</h3>
+        <label class="field">
+          <span>Velikost plochy</span>
+          <select id="selectBoardSize">
+            <option value="3">3 × 3</option>
+            <option value="4">4 × 4</option>
+            <option value="5">5 × 5</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Počet v řadě pro výhru</span>
+          <select id="selectWinLength"></select>
+        </label>
+      </section>
+
+      <section class="settings-section">
+        <h3>Vzhled</h3>
+        <label class="field">
+          <span>Obloha</span>
+          <select id="selectTheme">
+            <option value="day">Denní obloha</option>
+            <option value="night">Noční let</option>
+            <option value="desert">Pouštní přelet</option>
+            <option value="storm">Bouřkový front</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Sada symbolů</span>
+          <select id="selectIconSet">
+            <option value="jet-cloud">Stíhačka vs. Mrak</option>
+            <option value="heli-balloon">Vrtulník vs. Balón</option>
+            <option value="rocket-target">Raketa vs. Terč</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Barva hráče 1</span>
+          <select id="selectColorX">
+            <option value="blue">Modrá</option>
+            <option value="red">Červená</option>
+            <option value="green">Zelená</option>
+            <option value="yellow">Žlutá</option>
+          </select>
+        </label>
+
+        <label class="field">
+          <span>Barva hráče 2</span>
+          <select id="selectColorO">
+            <option value="red">Červená</option>
+            <option value="blue">Modrá</option>
+            <option value="green">Zelená</option>
+            <option value="yellow">Žlutá</option>
+          </select>
+        </label>
+
+        <label class="field field--switch">
+          <span>Animace oblohy</span>
+          <input type="checkbox" id="checkAnimation" class="switch">
+        </label>
+      </section>
+
+      <section class="settings-section">
+        <h3>Zvuk a ovládání</h3>
+        <label class="field field--switch">
+          <span>Zvukové efekty</span>
+          <input type="checkbox" id="checkSound" class="switch">
+        </label>
+        <label class="field field--switch">
+          <span>Vibrace (mobil)</span>
+          <input type="checkbox" id="checkVibration" class="switch">
+        </label>
+      </section>
+
+    </div>
+
+    <div class="modal__footer">
+      <button id="btnRestoreDefaults" class="btn btn--ghost">Výchozí nastavení</button>
+      <button id="btnApplySettings" class="btn btn--primary">Uložit a hrát</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="js/game.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/sound.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
