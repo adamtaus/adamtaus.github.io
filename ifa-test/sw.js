@@ -1,10 +1,18 @@
-const CACHE_NAME = 'inflight-assistant-v8';
+const CACHE_NAME = 'inflight-assistant-v10';
 const APP_SHELL = [
   './',
   './index.html',
   './manifest.json',
   './icon-ifa.png',
-  './sw.js'
+  './sw.js',
+  './icons/panini.png',
+  './icons/wrap.png',
+  './icons/croque.png',
+  './icons/bloomer.png',
+  './icons/hotdog.png',
+  './icons/pasta.png',
+  './icons/pork.png',
+  './icons/baguette.png'
 ];
 
 self.addEventListener('install', event => {
