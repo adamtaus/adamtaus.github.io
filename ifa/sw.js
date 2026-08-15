@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inflight-asistent-v5';
+const CACHE_NAME = 'inflight-assistant-v8';
 const APP_SHELL = [
   './',
   './index.html',
