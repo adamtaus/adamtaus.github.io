@@ -1894,14 +1894,15 @@ const FLIGHT_TIME_BY_DEST = {
   KGS:'02:10', MIR:'02:10', CFU:'01:35', SUF:'01:40', ZTH:'02:00', DLM:'02:15'
 };
 const FLIGHT_TIME_DEFAULT = '02:00';
-function getRoutingDestCode(routing){
-  const parts = String(routing || '').toUpperCase().split(/[–-]/).map(part => part.trim()).filter(Boolean);
-  return parts.length >= 2 ? parts[1] : '';
+const HOME_AIRPORT_CODES = ['PRG', 'BRQ', 'OSR', 'BTS'];
+function getRoutingCodes(routing){
+  return String(routing || '').toUpperCase().split(/[–-]/).map(part => part.trim()).filter(Boolean);
 }
 function suggestedFlightTime(routing){
-  const dest = getRoutingDestCode(routing);
-  if(dest.length !== 3) return null;
-  return FLIGHT_TIME_BY_DEST[dest] || FLIGHT_TIME_DEFAULT;
+  const destCodes = getRoutingCodes(routing).filter(code => code.length === 3 && !HOME_AIRPORT_CODES.includes(code));
+  if(!destCodes.length) return null;
+  const known = destCodes.find(code => FLIGHT_TIME_BY_DEST[code]);
+  return known ? FLIGHT_TIME_BY_DEST[known] : FLIGHT_TIME_DEFAULT;
 }
 function updateFlightTimeFromRouting(){
   const leg = activeLeg();
@@ -1927,6 +1928,13 @@ function updateLeg2AutoFields(){
   if(state.leg2AutoRouting){
     leg2.routing = reverseRouting(leg1.routing);
     if(state.activeLeg === 1) document.getElementById('routing').value = leg2.routing;
+    if(leg2.flightTimeAuto){
+      const suggestion = suggestedFlightTime(leg2.routing);
+      if(suggestion !== null){
+        leg2.flightTime = suggestion;
+        if(state.activeLeg === 1) document.getElementById('flightTime').value = suggestion;
+      }
+    }
   }
 }
 
