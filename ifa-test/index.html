@@ -765,7 +765,7 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
   <main class="main">
     <div class="seatmap-wrap">
       <div class="topbar">
-        <h2>Boeing 737-800/MAX 8</h2>
+        <h2>Boeing 737-800/MAX8</h2>
         <div class="orientation-pill">
           <span class="muted">Směr mapy:</span>
           <strong id="orientationLabel" class="orientation-value">1 → 34 / ABC DEF</strong>
@@ -926,7 +926,7 @@ const FRESH_PRODUCTS = ['Panini', 'Wrap', 'Croque', 'Bloomer', 'Hot Dog', 'Pasta
 const CATERING_PRODUCTS = ['SLML', 'SMML', 'SNML', 'SOML', 'SYML', 'SZML'];
 const HIDDEN_SEATS = ['6D','6E','6F'];
 
-function blankLeg(){ return { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', freshOrderCounter:0, seats:{} }; }
+function blankLeg(){ return { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', freshOrderCounter:0, flightTimeAuto:true, seats:{} }; }
 let state = { activeLeg:0, legs:[blankLeg(), blankLeg()], leg2AutoFlightNo:true, leg2AutoRouting:true, generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshStock:{ total:{}, sold:{} } };
 function activeLeg(){ return state.legs[state.activeLeg]; }
 let currentSeat = null;
@@ -1553,6 +1553,7 @@ function buildLegFromParsed(parsedLeg){
     paxCount: parsedLeg.paxCount || '',
     startTime: parsedLeg.startTime || '',
     freshOrderCounter: Math.max(Number(parsedLeg.freshOrderCounter || 0), normalized.freshOrderCounter),
+    flightTimeAuto: parsedLeg.flightTimeAuto !== undefined ? !!parsedLeg.flightTimeAuto : true,
     seats: normalized.seats
   };
 }
@@ -1888,6 +1889,28 @@ function reverseRouting(value){
   if(parts.length !== 2) return text;
   return `${parts[1]}–${parts[0]}`;
 }
+const FLIGHT_TIME_BY_DEST = {
+  BOJ:'01:35', AYT:'02:30', RMF:'04:00', HRG:'03:40', HER:'02:20', VAR:'01:35',
+  KGS:'02:10', MIR:'02:10', CFU:'01:35', SUF:'01:40', ZTH:'02:00', DLM:'02:15'
+};
+const FLIGHT_TIME_DEFAULT = '02:00';
+function getRoutingDestCode(routing){
+  const parts = String(routing || '').toUpperCase().split(/[–-]/).map(part => part.trim()).filter(Boolean);
+  return parts.length >= 2 ? parts[1] : '';
+}
+function suggestedFlightTime(routing){
+  const dest = getRoutingDestCode(routing);
+  if(dest.length !== 3) return null;
+  return FLIGHT_TIME_BY_DEST[dest] || FLIGHT_TIME_DEFAULT;
+}
+function updateFlightTimeFromRouting(){
+  const leg = activeLeg();
+  if(!leg.flightTimeAuto) return;
+  const suggestion = suggestedFlightTime(document.getElementById('routing').value);
+  if(suggestion === null) return;
+  document.getElementById('flightTime').value = suggestion;
+  persist();
+}
 function updateLegTabs(){
   document.querySelectorAll('.leg-tab').forEach(btn => {
     btn.classList.toggle('active', Number(btn.dataset.leg) === state.activeLeg);
@@ -2150,9 +2173,13 @@ document.getElementById('routing').addEventListener('input', e => {
   if(state.activeLeg === 1) state.leg2AutoRouting = false;
   persist();
   if(state.activeLeg === 0) updateLeg2AutoFields();
+  updateFlightTimeFromRouting();
 });
 
-document.getElementById('flightTime').addEventListener('input', persist);
+document.getElementById('flightTime').addEventListener('input', () => {
+  activeLeg().flightTimeAuto = false;
+  persist();
+});
 document.querySelectorAll('[data-mode="custom-catering"]').forEach(btn => {
   btn.addEventListener('click', () => {
     const action = btn.dataset.action;
