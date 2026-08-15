@@ -1,5 +1,5 @@
 {
-  "name": "In-flight asistent",
+  "name": "In-Flight Assistant",
   "short_name": "IFA",
   "start_url": "./index.html",
   "display": "standalone",
