@@ -3,223 +3,367 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<title>In-Flight Asistent</title>
+<title>In-Flight Assistant</title>
 <link rel="apple-touch-icon" href="icon-ifa.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#004289">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="In-Flight Asistent">
+<meta name="apple-mobile-web-app-title" content="In-Flight Assistant">
 
 <style>
 :root{
-  --blue:#004289;
-  --orange:#F28E00;
+  --blue:#0b4f86;
+  --blue-dark:#083c68;
+  --blue-light:#e8f0f9;
+  --navy:#0a2540;
+  --orange:#e8830a;
+  --orange-dark:#c96e00;
 
-  --bg:#f6f8fb;
-  --bg2:#eef3f8;
+  --bg:#f4f6f8;
+  --bg2:#eef1f4;
   --panel:#ffffff;
-  --panel-soft:#f4f7fb;
-  --line:#d8e1eb;
-  --text:#1f2937;
-  --heading:#004289;
-  --muted:#64748b;
+  --panel-soft:#f8fafb;
+  --panel-alt:#eef1f4;
+  --line:#e1e6ec;
+  --line-strong:#cbd3dd;
+  --text:#333d4d;
+  --heading:#0f1826;
+  --muted:#68727f;
+
   --seat:#ffffff;
-  --seat-selected:#dbeafe;
-  --seat-marked:#f3f7ff;
-  --exit:#d8f5d0;
-  --disabled:#eceff4;
+  --seat-selected:#e5eefb;
+  --exit:#e7f5ea;
+  --exit-line:#2f9e52;
+  --disabled:#eef0f3;
 
-  --pill-fresh-bg:#ffe1bf;
-  --pill-fresh-text:#b85c00;
+  --pill-fresh-bg:#fbe7cf;
+  --pill-fresh-text:#8a4c04;
+  --pill-pax-bg:#eae4fb;
+  --pill-pax-text:#5b2fb0;
+  --pill-catering-bg:#fbdede;
+  --pill-catering-text:#932222;
+  --pill-note-bg:#e9edf2;
+  --pill-note-text:#48535f;
 
-  --pill-pax-bg:#efe7ff;
-  --pill-pax-text:#6d28d9;
+  --success-bg:#e5f4e9;
+  --success-border:#a9d9b6;
+  --success-text:#1c6b39;
+  --warning-bg:#fbf0dc;
+  --warning-border:#e7c581;
+  --warning-text:#8a5b0a;
+  --danger:#c0362b;
+  --danger-dark:#9c2a20;
 
-  --pill-catering-bg:#ffd6d6;
-  --pill-catering-text:#a11a1a;
+  --radius-xs:4px;
+  --radius-sm:6px;
+  --radius-md:8px;
+  --radius-lg:10px;
+  --radius-xl:12px;
 
-  --pill-note-bg:#edf2f7;
-  --pill-note-text:#475569;
-
-  --shadow:0 8px 24px rgba(15,23,42,.08);
+  --shadow-sm:0 1px 2px rgba(15,23,42,.05);
+  --shadow:0 1px 3px rgba(15,23,42,.06), 0 8px 20px -10px rgba(15,23,42,.15);
+  --shadow-lg:0 20px 44px -14px rgba(15,23,42,.28);
+  --focus-ring:0 0 0 3px color-mix(in srgb, var(--blue) 30%, transparent);
 }
 body.dark{
-  --bg:#0b1220;
-  --bg2:#10192b;
-  --panel:#162033;
-  --panel-soft:#1b2942;
-  --line:#30415d;
-  --text:#f8fafc;
-  --heading:#ffffff;
-  --muted:#c3cedd;
-  --seat:#1a2740;
-  --seat-selected:#244a7a;
-  --seat-marked:#263858;
-  --exit:#1e4a20;
-  --disabled:#29364a;
+  --blue:#4f8fd6;
+  --blue-dark:#3a76bb;
+  --blue-light:#132943;
+  --navy:#050d18;
+  --orange:#f2a13d;
+  --orange-dark:#d6862a;
 
-  --pill-fresh-bg:#5a3710;
-  --pill-fresh-text:#ffd39a;
+  --bg:#0c0f14;
+  --bg2:#0f1319;
+  --panel:#151a21;
+  --panel-soft:#1a2029;
+  --panel-alt:#1e252f;
+  --line:#2a323d;
+  --line-strong:#3a4553;
+  --text:#dde2e8;
+  --heading:#f5f7f9;
+  --muted:#8993a1;
 
-  --pill-pax-bg:#3b2758;
-  --pill-pax-text:#eedbff;
+  --seat:#171d26;
+  --seat-selected:#1f3a5c;
+  --exit:#132a1e;
+  --exit-line:#3fbd6a;
+  --disabled:#20262e;
 
-  --pill-catering-bg:#6a1f1f;
-  --pill-catering-text:#ffd7d7;
+  --pill-fresh-bg:#4a3313;
+  --pill-fresh-text:#f0c483;
+  --pill-pax-bg:#33254e;
+  --pill-pax-text:#dcc9fb;
+  --pill-catering-bg:#4c2020;
+  --pill-catering-text:#f5c2c2;
+  --pill-note-bg:#232a33;
+  --pill-note-text:#c7d0da;
 
-  --pill-note-bg:#233246;
-  --pill-note-text:#e5eef9;
+  --success-bg:#132a1c;
+  --success-border:#28553a;
+  --success-text:#7fcf9a;
+  --warning-bg:#33280f;
+  --warning-border:#5c4a1e;
+  --warning-text:#e8bd6c;
+  --danger:#e0574a;
+  --danger-dark:#b8402f;
 
-  --shadow:0 12px 30px rgba(0,0,0,.35);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 24px -12px rgba(0,0,0,.55);
+  --shadow-lg:0 24px 50px -16px rgba(0,0,0,.6);
+  --focus-ring:0 0 0 3px color-mix(in srgb, var(--blue) 40%, transparent);
+}
+:root{
+  --i-rotate: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M20 12a8 8 0 1 1-2.6-5.9'/><path d='M20 4v5h-5'/></svg>");
+  --i-grid: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><rect x='3.5' y='3.5' width='7' height='7' rx='1.2'/><rect x='13.5' y='3.5' width='7' height='7' rx='1.2'/><rect x='3.5' y='13.5' width='7' height='7' rx='1.2'/><rect x='13.5' y='13.5' width='7' height='7' rx='1.2'/></svg>");
+  --i-moon: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M20.5 14.5A8.5 8.5 0 1 1 9.5 3.5a7 7 0 0 0 11 11z'/></svg>");
+  --i-sun: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='4'/><path d='M12 2.5v2.5M12 19v2.5M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2.5 12H5M19 12h2.5M4.2 19.8 6 18M18 6l1.8-1.8'/></svg>");
+  --i-info: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='8.5'/><path d='M12 11v5.5'/><path d='M12 8.2v.1'/></svg>");
+  --i-search: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><circle cx='10.5' cy='10.5' r='6.5'/><path d='M20 20l-4.8-4.8'/></svg>");
+  --i-tag: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M20 13.3 12.7 20.6a1.5 1.5 0 0 1-2.1 0l-7.2-7.2a1.5 1.5 0 0 1 0-2.1L10.7 4H18a2 2 0 0 1 2 2v7.3z'/><circle cx='14.2' cy='9.8' r='1.4'/></svg>");
+  --i-box: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M20.5 7.5 12 3 3.5 7.5v9L12 21l8.5-4.5v-9z'/><path d='M3.5 7.5 12 12l8.5-4.5M12 12v9'/></svg>");
+  --i-download: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3.5v11'/><path d='M7.5 10l4.5 4.5L16.5 10'/><path d='M4.5 19.5h15'/></svg>");
+  --i-upload: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M12 19.5v-11'/><path d='M7.5 13l4.5-4.5L16.5 13'/><path d='M4.5 4.5h15'/></svg>");
+  --i-trash: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4.5 7h15'/><path d='M9.5 7V4.6c0-.6.5-1.1 1.1-1.1h2.8c.6 0 1.1.5 1.1 1.1V7'/><path d='M6.5 7l1 12.4c0 .6.5 1.1 1.1 1.1h6.8c.6 0 1-.5 1.1-1.1L17.5 7'/></svg>");
+  --i-list: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4.5 6.5h15M4.5 12h15M4.5 17.5h9.5'/></svg>");
+  --i-play: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M6.5 4.5v15l13-7.5z'/></svg>");
+  --i-refresh: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4 12a8 8 0 0 1 13.7-5.7L20 8.5'/><path d='M20 4.5v4h-4'/><path d='M20 12a8 8 0 0 1-13.7 5.7L4 15.5'/><path d='M4 19.5v-4h4'/></svg>");
+  --i-close: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M6 6l12 12M18 6L6 18'/></svg>");
+  --i-check: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M5 12.5l4.5 4.5L19.5 7'/></svg>");
+  --i-plus: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M12 5v14M5 12h14'/></svg>");
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth;font-size:15px}
 html,body{margin:0;padding:0}
 body{
   font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   color:var(--text);
-  background:linear-gradient(180deg,var(--bg),var(--bg2));
+  background:var(--bg);
+  color-scheme:light;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  transition:background-color .2s ease,color .2s ease;
 }
+body.dark{color-scheme:dark}
 .app{display:grid;grid-template-columns:340px 1fr;min-height:100vh}
-.sidebar{background:var(--panel);border-right:1px solid var(--line);padding:16px;position:sticky;top:0;height:100vh;overflow:auto}
-.main{padding:16px;overflow:auto}
-h1,h2,h3{margin:0 0 10px;color:var(--heading)}
-h1{font-size:1.3rem}
+.sidebar{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:auto}
+.sidebar-header{position:sticky;top:0;z-index:6;flex:0 0 auto;display:flex;align-items:center;padding:16px 18px;background:var(--navy);color:#fff}
+.sidebar-header h1{margin:0;font-size:.98rem;font-weight:650;color:#fff;letter-spacing:-.005em}
+.sidebar-body{flex:1 1 auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+.main{padding:22px 26px;overflow:auto}
+h1,h2,h3{margin:0 0 8px;color:var(--heading);font-weight:650}
+h1{font-size:1.2rem}
 h2{font-size:1rem}
 p,label,small{color:var(--muted)}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow);padding:14px;margin-bottom:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-lg);overflow:hidden;display:flex;flex-direction:column}
+.card-header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:var(--panel-soft);border-bottom:1px solid var(--line)}
+.card-header h2{margin:0;font-size:.88rem;font-weight:650;color:var(--heading);letter-spacing:.005em}
+.card-body{flex:1 1 auto;padding:16px;display:flex;flex-direction:column;gap:16px}
+.nav-group{display:flex;flex-direction:column;gap:8px}
+.nav-group-label{font-size:.66rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.row button{flex:0 0 calc(50% - 4px);text-align:center}
-.row.single button{flex:0 0 auto;min-width:180px}
 .space-between{justify-content:space-between}
+.btn-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:8px}
+.field-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
 input,textarea,button,select{font:inherit}
 input[type=text],textarea{
-  width:100%;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--panel);color:var(--text);outline:none
+  width:100%;min-width:0;max-width:100%;border:1px solid var(--line);border-radius:var(--radius-md);padding:9px 11px;background:var(--panel);color:var(--text);outline:none;box-sizing:border-box;
+  transition:border-color .15s ease,box-shadow .15s ease
 }
-textarea{resize:vertical;min-height:84px}
-button{border:none;border-radius:12px;padding:10px 12px;background:var(--blue);color:#fff;font-weight:700;cursor:pointer}
-button.secondary{background:var(--panel-soft);color:var(--text);border:1px solid var(--line)}
+input[type=text]:focus,textarea:focus{border-color:var(--blue);box-shadow:var(--focus-ring)}
+textarea{resize:vertical;min-height:80px}
+button{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;border:none;border-radius:var(--radius-md);padding:9px 13px;background:var(--blue);color:#fff;font-weight:600;font-size:.86rem;cursor:pointer;letter-spacing:.003em;transition:background-color .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease}
+button:active{background:var(--blue-dark)}
+button.secondary:active{background:var(--panel-alt)}
+button.ghost:active{background:var(--panel-soft)}
+.delivery-chip:active{background:var(--panel-alt)}
+.leg-tab:active,.letter-btn:active{background:transparent}
+button:active{opacity:.9}
+button:focus-visible{outline:none;box-shadow:var(--focus-ring)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.secondary{background:var(--panel);color:var(--text);border:1px solid var(--line-strong)}
 button.warn{background:var(--orange);color:#fff}
-button.danger{background:#d92d20;color:#fff}
+button.danger{background:var(--danger);color:#fff}
 button.ghost{background:transparent;color:var(--text);border:1px solid var(--line)}
-button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
-.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-.stat{background:var(--panel-soft);border:1px solid var(--line);border-radius:14px;padding:10px}
-.stat b{display:block;font-size:1.15rem;color:var(--heading)}
+button.small{padding:7px 11px;font-size:.78rem}
+button[data-icon]{display:inline-flex;align-items:center;justify-content:center;gap:8px}
+button[data-icon]::before{content:"";width:15px;height:15px;flex:0 0 auto;background-color:currentColor;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:contain;mask-size:contain}
+button.small[data-icon]::before{width:13px;height:13px}
+button[data-icon="rotate"]::before{-webkit-mask-image:var(--i-rotate);mask-image:var(--i-rotate)}
+button[data-icon="grid"]::before{-webkit-mask-image:var(--i-grid);mask-image:var(--i-grid)}
+button[data-icon="theme"]::before{-webkit-mask-image:var(--i-moon);mask-image:var(--i-moon)}
+body.dark button[data-icon="theme"]::before{-webkit-mask-image:var(--i-sun);mask-image:var(--i-sun)}
+button[data-icon="info"]::before{-webkit-mask-image:var(--i-info);mask-image:var(--i-info)}
+button[data-icon="search"]::before{-webkit-mask-image:var(--i-search);mask-image:var(--i-search)}
+button[data-icon="tag"]::before{-webkit-mask-image:var(--i-tag);mask-image:var(--i-tag)}
+button[data-icon="box"]::before{-webkit-mask-image:var(--i-box);mask-image:var(--i-box)}
+button[data-icon="download"]::before{-webkit-mask-image:var(--i-download);mask-image:var(--i-download)}
+button[data-icon="upload"]::before{-webkit-mask-image:var(--i-upload);mask-image:var(--i-upload)}
+button[data-icon="trash"]::before{-webkit-mask-image:var(--i-trash);mask-image:var(--i-trash)}
+button[data-icon="list"]::before{-webkit-mask-image:var(--i-list);mask-image:var(--i-list)}
+button[data-icon="play"]::before{-webkit-mask-image:var(--i-play);mask-image:var(--i-play)}
+button[data-icon="refresh"]::before{-webkit-mask-image:var(--i-refresh);mask-image:var(--i-refresh)}
+button[data-icon="close"]::before{-webkit-mask-image:var(--i-close);mask-image:var(--i-close)}
+button[data-icon="check"]::before{-webkit-mask-image:var(--i-check);mask-image:var(--i-check)}
+button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var(--i-plus)}
 .legend-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.legend-item{display:flex;gap:8px;align-items:center;font-size:.9rem;color:var(--text)}
-.swatch{width:14px;height:14px;border-radius:4px;border:1px solid rgba(0,0,0,.08);flex:0 0 14px}
-.legend-panel{display:none;margin-top:10px}
-.legend-panel.open{display:block}
-.tool-section{margin-top:10px;padding:12px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--panel),var(--panel-soft));box-shadow:var(--shadow)}
+.legend-item{display:flex;gap:8px;align-items:center;font-size:.82rem;color:var(--text)}
+.swatch{width:13px;height:13px;border-radius:3px;border:1px solid rgba(0,0,0,.1);flex:0 0 13px}
+.legend-panel{display:none}
+.legend-panel.open{display:flex;flex-direction:column;gap:12px}
+.tool-section{padding:14px;border:1px solid var(--line);border-radius:var(--radius-lg);background:var(--panel-soft)}
 .tool-section h2,.tool-section h3{margin-top:0}
-.list{max-height:220px;overflow:auto}
-.list-item{padding:8px 10px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--panel);color:var(--text)}
+.list{max-height:220px;overflow:auto;display:flex;flex-direction:column;gap:7px}
+.list-item{padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--panel);color:var(--text);font-size:.86rem}
 .delivery-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-.delivery-chip{border:1px solid var(--line);background:var(--panel-soft);color:var(--text);border-radius:999px;padding:6px 10px;font-size:.82rem;font-weight:700;cursor:pointer}
-.delivery-chip.done{background:#dcfce7;border-color:#86efac;color:#166534}
-.delivery-chip.partial{background:#fef3c7;border-color:#fcd34d;color:#92400e}
-.delivery-chip .tick{margin-left:4px;font-weight:900}
-.delivery-hint{margin-top:6px;font-size:.78rem;color:var(--muted)}
+.delivery-chip{border:1px solid var(--line);background:var(--panel-soft);color:var(--text);border-radius:var(--radius-sm);padding:5px 9px;font-size:.78rem;font-weight:600;cursor:pointer;transition:background-color .15s ease,border-color .15s ease}
+.delivery-chip.done{background:var(--success-bg);border-color:var(--success-border);color:var(--success-text)}
+.delivery-chip.partial{background:var(--warning-bg);border-color:var(--warning-border);color:var(--warning-text)}
+.delivery-chip .tick{margin-left:4px;font-weight:800}
+.delivery-hint{margin-top:6px;font-size:.75rem;color:var(--muted)}
 .delivery-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.delivery-action{border:1px solid var(--line);background:var(--panel-soft);color:var(--text);border-radius:10px;padding:8px 10px;font-size:.8rem;font-weight:800;cursor:pointer}
-.delivery-action.done{background:#dcfce7;border-color:#86efac;color:#166534}
+.delivery-action{border:1px solid var(--line);background:var(--panel-soft);color:var(--text);border-radius:var(--radius-sm);padding:7px 10px;font-size:.76rem;font-weight:700;cursor:pointer;transition:background-color .15s ease,border-color .15s ease}
+.delivery-action.done{background:var(--success-bg);border-color:var(--success-border);color:var(--success-text)}
 .seat-top{display:flex;align-items:center;justify-content:space-between;gap:4px}
-.seat-status{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:999px;font-size:.68rem;font-weight:900;border:1px solid var(--line);background:var(--panel-soft);color:var(--muted);flex:0 0 16px}
-.seat-status.partial{background:#fef3c7;border-color:#fcd34d;color:#92400e}
-.seat-status.done{background:#dcfce7;border-color:#86efac;color:#166534}
+.seat-status{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;font-size:.64rem;font-weight:800;border:1px solid var(--line);background:var(--panel-soft);color:var(--muted);flex:0 0 15px}
+.seat-status.partial{background:var(--warning-bg);border-color:var(--warning-border);color:var(--warning-text)}
+.seat-status.done{background:var(--success-bg);border-color:var(--success-border);color:var(--success-text)}
 .seatmap-wrap{max-width:1240px;margin:0 auto}
-.topbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-bottom:14px}
-.seatmap{background:var(--panel);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);padding:16px 12px 22px;overflow:hidden}
-.aircraft-head,.aircraft-tail{text-align:center;color:var(--heading);font-size:.82rem;letter-spacing:.18em;margin:4px 0 12px;font-weight:800}
-.grid-header,.seat-row{display:grid;grid-template-columns:36px repeat(3,1fr) 24px repeat(3,1fr);gap:6px;align-items:center}
-.grid-header{position:sticky;top:0;padding:8px 0;background:color-mix(in srgb, var(--bg) 92%, transparent);z-index:2;color:var(--text);font-weight:700;text-align:center}
-.rownum{text-align:center;font-weight:800;color:var(--heading);font-size:.9rem}
-.seat-row{padding:4px 0;border-bottom:1px dashed color-mix(in srgb, var(--line) 75%, transparent)}
-.seat-row.exit-row{background:linear-gradient(90deg,transparent,color-mix(in srgb, #22c55e 18%, transparent),transparent);border-radius:12px}
-.aisle{text-align:center;color:var(--muted);font-size:.72rem}
-.seat{min-height:58px;max-height:58px;border-radius:14px;border:1px solid var(--line);background:var(--seat);padding:6px 6px 5px;text-align:left;cursor:pointer;overflow:hidden;display:flex;flex-direction:column}
-.seat.exit{background:var(--exit)}
-.seat.selected{outline:2px solid color-mix(in srgb, var(--orange) 45%, transparent);background:var(--seat-selected)}
-.seat.has-data{box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--orange) 45%, transparent)}
+.topbar{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.topbar h2{margin:0;font-size:1.15rem;font-weight:650}
+.orientation-pill{display:inline-flex;align-items:center;gap:8px;background:var(--panel-soft);border:1px solid var(--line);border-radius:var(--radius-md);padding:7px 12px;font-size:.82rem}
+.orientation-pill .muted{font-size:.78rem}
+.orientation-value{color:var(--blue);font-weight:700;font-variant-numeric:tabular-nums}
+.seatmap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-xl);padding:16px 14px 20px;overflow:hidden}
+.aircraft-head,.aircraft-tail{text-align:center;color:var(--muted);font-size:.75rem;letter-spacing:.2em;margin:2px 0 10px;font-weight:700;text-transform:uppercase}
+.grid-header,.seat-row{display:grid;grid-template-columns:34px repeat(3,1fr) 22px repeat(3,1fr);gap:6px;align-items:center}
+.grid-header{position:sticky;top:0;padding:8px 0;margin-bottom:2px;background:var(--panel);border-bottom:1px solid var(--line);z-index:2;color:var(--muted);font-weight:700;font-size:.76rem;letter-spacing:.08em;text-align:center}
+.rownum{text-align:center;font-weight:650;color:var(--muted);font-size:.84rem;font-variant-numeric:tabular-nums}
+.seat-row{padding:3px 0}
+.seat-row.exit-row{background:color-mix(in srgb, var(--exit-line) 6%, transparent)}
+.aisle{text-align:center;color:var(--line-strong);font-size:.7rem}
+.seat{min-height:54px;max-height:54px;border-radius:var(--radius-sm);border:1px solid var(--line);background:var(--seat);padding:5px 6px 4px;text-align:left;cursor:pointer;overflow:hidden;display:flex;flex-direction:column;transition:border-color .12s ease,background-color .12s ease}
+.seat:not(.disabled):active{background:var(--panel-alt)}
+.seat.exit{background:var(--exit);border-color:color-mix(in srgb, var(--exit-line) 35%, var(--line))}
+.seat.selected{border-color:var(--orange);box-shadow:inset 0 0 0 1px var(--orange)}
+.seat.has-data{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
 .seat.disabled{
-  background:repeating-linear-gradient(135deg,color-mix(in srgb, var(--disabled) 100%, transparent) 0px,color-mix(in srgb, var(--disabled) 100%, transparent) 6px,color-mix(in srgb, var(--panel-soft) 100%, transparent) 6px,color-mix(in srgb, var(--panel-soft) 100%, transparent) 12px);
-  color:var(--muted);cursor:not-allowed;opacity:.9
+  background:repeating-linear-gradient(135deg,var(--disabled) 0px,var(--disabled) 6px,var(--panel-soft) 6px,var(--panel-soft) 12px);
+  color:var(--muted);cursor:not-allowed;opacity:.8
 }
-.seat-topline{display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:4px}
-.seat-id{font-weight:800;color:var(--heading);font-size:.85rem;line-height:1.1;margin-bottom:0}
-.seat-status-badge{width:16px;height:16px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:900;flex:0 0 16px;border:1px solid transparent}
-.seat-status-badge.done{background:#dcfce7;border-color:#86efac;color:#166534}
-.seat-status-badge.partial{background:#fef3c7;border-color:#fcd34d;color:#92400e}
-.seat-meta{display:flex;flex-direction:column;gap:3px;font-size:.63rem;line-height:1.1;overflow:hidden}
-.pill{display:inline-flex;align-items:center;width:max-content;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px 6px;border-radius:999px;font-weight:700}
+.seat-topline{display:flex;align-items:center;justify-content:space-between;gap:4px;margin-bottom:3px}
+.seat-id{font-weight:700;color:var(--heading);font-size:.8rem;line-height:1.1;margin-bottom:0}
+.seat-status-badge{width:15px;height:15px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.64rem;font-weight:800;flex:0 0 15px;border:1px solid transparent}
+.seat-status-badge.done{background:var(--success-bg);border-color:var(--success-border);color:var(--success-text)}
+.seat-status-badge.partial{background:var(--warning-bg);border-color:var(--warning-border);color:var(--warning-text)}
+.seat-meta{display:flex;flex-direction:column;gap:2px;font-size:.6rem;line-height:1.15;overflow:hidden}
+.pill{display:inline-flex;align-items:center;width:max-content;max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:1px 5px;border-radius:var(--radius-xs);font-weight:650}
 .pill-fresh{background:var(--pill-fresh-bg);color:var(--pill-fresh-text)}
 .pill-pax{background:var(--pill-pax-bg);color:var(--pill-pax-text)}
 .pill-catering{background:var(--pill-catering-bg);color:var(--pill-catering-text)}
 .pill-note{background:var(--pill-note-bg);color:var(--pill-note-text)}
 .muted{color:var(--muted)}
-.modal{position:fixed;inset:0;background:rgba(15,23,42,.38);display:none;align-items:center;justify-content:center;padding:12px;z-index:50}
+.modal{position:fixed;inset:0;background:rgba(8,12,20,.55);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
 .modal.open{display:flex}
-.modal-box{width:min(980px,100%);max-height:92vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 50px rgba(15,23,42,.18);padding:16px;color:var(--text)}
-.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.section-block{display:flex;flex-direction:column}
-.section-title{font-size:.95rem;font-weight:800;color:var(--heading);margin:0 0 8px}
-.check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;color:var(--text)}
+.modal-box{width:min(960px,100%);max-height:92vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-xl);box-shadow:var(--shadow-lg);color:var(--text);display:flex;flex-direction:column}
+.modal-header{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--panel-soft);position:sticky;top:0;z-index:2}
+.modal-header h2{margin:0;font-size:1rem;font-weight:650}
+.modal-body{padding:20px}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.section-block{display:flex;flex-direction:column;gap:10px}
+.section-title{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:0}
+.check-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px 9px;color:var(--text)}
+.check-grid label{display:flex;align-items:center;gap:7px;padding:7px 9px;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--panel-soft);font-size:.82rem;font-weight:550;cursor:pointer;transition:border-color .15s ease,background-color .15s ease}
+.check-grid label:has(input:checked){border-color:var(--blue);background:var(--blue-light);color:var(--heading)}
 .products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.product{border:1px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--panel)}
-.product-name{font-weight:800;color:var(--heading);margin-bottom:6px;font-size:.92rem}
+.product{border:1px solid var(--line);border-radius:var(--radius-md);padding:9px;background:var(--panel);display:flex;flex-direction:column;gap:7px}
+.product-name{font-weight:650;color:var(--heading);font-size:.85rem}
 .qty{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.qty-controls{display:flex;align-items:center;gap:10px}
-.qty-btn{width:40px;height:40px;border-radius:10px;background:var(--panel-soft);color:var(--text);border:1px solid var(--line);font-weight:800;padding:0;font-size:1.2rem;display:flex;align-items:center;justify-content:center;touch-action:manipulation}
-.qty-number{min-width:28px;text-align:center;font-weight:800;font-size:1rem;color:var(--text)}
-.cart{margin-top:8px;background:var(--panel-soft);border:1px dashed var(--line);border-radius:12px;padding:10px;min-height:48px;color:var(--text)}
+.qty-controls{display:flex;align-items:center;gap:9px}
+.qty-btn{width:32px;height:32px;border-radius:var(--radius-sm);background:var(--panel-soft);color:var(--text);border:1px solid var(--line);font-weight:700;padding:0;font-size:1.05rem;display:flex;align-items:center;justify-content:center;touch-action:manipulation;transition:background-color .15s ease,border-color .15s ease}
+.qty-number{min-width:22px;text-align:center;font-weight:700;font-size:.92rem;color:var(--text);font-variant-numeric:tabular-nums}
+.cart{margin-top:0;background:var(--panel-soft);border:1px dashed var(--line-strong);border-radius:var(--radius-md);padding:9px 10px;min-height:40px;color:var(--text);font-size:.82rem}
 .custom-product-input{width:100%;text-transform:uppercase}
-.list-item-head,.summary-row-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px}
-.list-item-head > strong,.summary-row-head > strong{flex:1 1 auto}
-.delivery-actions{display:flex;justify-content:flex-end;align-items:flex-start;margin-top:0;flex:0 0 auto}
-.delivery-bulk-btn{padding:6px 8px;font-size:.78rem;line-height:1.1}
-.delivery-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
-.delivery-chip{padding:5px 8px;font-size:.74rem;line-height:1.1}
-.code-help{margin-top:10px;font-size:.88rem;color:var(--text);background:var(--panel-soft);border:1px dashed var(--line);padding:10px;border-radius:12px}
-.sticky-actions{position:sticky;bottom:0;background:linear-gradient(180deg,transparent,var(--panel) 22%);padding-top:10px}
-.summary-modal-list{max-height:60vh;overflow:auto}
-.summary-row{padding:8px 10px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;background:var(--panel)}
+.list-item-head,.summary-row-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:5px}
+.list-item-head > strong,.summary-row-head > strong{flex:1 1 auto;font-weight:650}
+.delivery-bulk-btn{padding:5px 9px;font-size:.72rem;line-height:1.1}
+.code-help{margin-top:10px;font-size:.82rem;color:var(--text);background:var(--panel-alt);border:1px solid var(--line);padding:10px;border-radius:var(--radius-md)}
+.sticky-actions{position:sticky;bottom:0;background:linear-gradient(180deg,transparent,var(--panel) 35%);padding:14px 20px 20px}
+.modal-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.summary-modal-list{max-height:60vh;overflow:auto;display:flex;flex-direction:column;gap:7px}
+.summary-row{padding:9px 11px;border:1px solid var(--line);border-radius:var(--radius-md);background:var(--panel)}
 
-.letter-picker{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-top:8px}
-.letter-btn{padding:10px 0;text-align:center}
+.letter-picker{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:8px}
+.letter-btn{padding:9px 0;text-align:center;font-weight:650}
 .letter-btn.active{background:var(--orange);color:#fff;border:none}
+
+.leg-tabs{position:relative;display:flex;gap:4px;background:var(--panel-alt);border:1px solid var(--line);border-radius:var(--radius-md);padding:4px}
+.leg-tabs::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 6px);background:var(--orange);border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+.leg-tabs:has(.leg-tab[data-leg="1"].active)::before{transform:translateX(calc(100% + 4px))}
+.leg-tab{position:relative;z-index:1;flex:1 1 0;text-align:center;background:transparent;color:var(--text);border:none;font-weight:650;letter-spacing:.02em;transition:color .2s ease}
+.leg-tab.active{background:transparent;color:#fff}
 
 .search-grid{display:grid;grid-template-columns:1fr auto;gap:8px}
 .search-grid input{min-width:0}
 .search-action{display:flex;align-items:end;justify-content:flex-end}
-@media (max-width:1100px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto}}
+.app-footer{text-align:center;margin:22px 0 4px;font-size:.75rem;color:var(--muted)}
+.fab{position:fixed;top:16px;right:16px;z-index:45;width:46px;height:46px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-lg);opacity:0;transform:translateY(-10px) scale(.9);pointer-events:none;transition:opacity .2s ease,transform .2s ease}
+.fab.visible{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.fab[data-icon]::before{width:19px;height:19px}
+@media (max-width:640px){.fab{top:12px;right:12px;width:44px;height:44px}}
+@media (hover:hover) and (pointer:fine){
+  button:hover{background:var(--blue-dark)}
+  button.secondary:hover{background:var(--panel-alt);border-color:var(--muted)}
+  button.warn:hover{background:var(--orange-dark)}
+  button.danger:hover{background:var(--danger-dark)}
+  button.ghost:hover{background:var(--panel-soft)}
+  .delivery-chip:hover{background:var(--panel-alt);border-color:var(--line-strong)}
+  .delivery-chip.done:hover{background:var(--success-bg);border-color:var(--success-border)}
+  .delivery-chip.partial:hover{background:var(--warning-bg);border-color:var(--warning-border)}
+  .delivery-action:hover{background:var(--panel-alt);border-color:var(--line-strong)}
+  .delivery-action.done:hover{background:var(--success-bg);border-color:var(--success-border)}
+  .seat:not(.disabled):hover{border-color:var(--blue);background:var(--panel-soft)}
+  .check-grid label:hover{border-color:var(--line-strong)}
+  .qty-btn:hover{background:var(--panel-alt);border-color:var(--line-strong)}
+  .letter-btn.active:hover{background:var(--orange-dark)}
+  .leg-tab:hover{background:transparent}
+  .stock-btn:hover:not(:disabled){background:var(--panel-alt)}
+}
+@media (max-width:1100px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto;border-right:none}}
 @media (max-width:820px){
-  .main,.sidebar{padding:12px}
-  .summary,.legend-grid{grid-template-columns:1fr}
+  .main{padding:16px}
+  .sidebar-body{padding:14px}
+  .legend-grid{grid-template-columns:1fr}
   .modal-grid{grid-template-columns:1fr}
   .products{grid-template-columns:1fr 1fr}
 }
 @media (max-width:640px){
-  h1{font-size:1.15rem}
-  .topbar{margin-bottom:10px}
-  .seatmap{padding:12px 8px 16px;border-radius:18px}
-  .grid-header,.seat-row{grid-template-columns:28px repeat(3,minmax(0,1fr)) 14px repeat(3,minmax(0,1fr));gap:4px}
-  .grid-header{font-size:.72rem}
-  .rownum{font-size:.78rem}
-  .seat{min-height:48px;max-height:48px;border-radius:10px;padding:4px 4px 3px}
-  .seat-id{font-size:.72rem;margin-bottom:2px}
-  .seat-status{width:14px;height:14px;font-size:.6rem}
-  .seat-meta{font-size:.53rem;gap:2px}
+  h1{font-size:1.1rem}
+  .topbar{margin-bottom:12px;padding-bottom:12px}
+  .seatmap{padding:10px 6px 14px;border-radius:var(--radius-lg)}
+  .grid-header,.seat-row{grid-template-columns:26px repeat(3,minmax(0,1fr)) 12px repeat(3,minmax(0,1fr));gap:4px}
+  .grid-header{font-size:.66rem}
+  .rownum{font-size:.76rem}
+  .seat{min-height:46px;max-height:46px;border-radius:var(--radius-xs);padding:4px 4px 3px}
+  .seat-id{font-size:.7rem;margin-bottom:2px}
+  .seat-status{width:13px;height:13px;font-size:.58rem}
+  .seat-meta{font-size:.52rem;gap:2px}
   .pill{padding:1px 4px}
-  .aisle{font-size:.6rem}
-  .card{padding:12px;border-radius:14px}
-  .modal-box{padding:12px;border-radius:18px}
-  .product{padding:7px 8px}
-  .product-name{font-size:.84rem}
-  .qty-btn{width:36px;height:36px}
-  .seat-status-badge{width:14px;height:14px;font-size:.62rem;flex-basis:14px}
+  .aisle{font-size:.58rem}
+  .card-header{padding:11px 14px}
+  .card-body{padding:14px;gap:14px}
+  .modal-header{padding:14px 16px}
+  .modal-body{padding:16px}
+  .sticky-actions{padding:12px 16px 16px}
+  .product{padding:7px}
+  .product-name{font-size:.8rem}
+  .qty-btn{width:30px;height:30px}
+  .seat-status-badge{width:13px;height:13px;font-size:.6rem;flex-basis:13px}
   .check-grid{grid-template-columns:1fr}
-  button{padding:9px 10px}
+  button{padding:9px 11px}
   .mobile-order-1{order:1}.mobile-order-2{order:2}.mobile-order-3{order:3}.mobile-order-4{order:4}
   .search-grid{grid-template-columns:1fr}
   .search-action{grid-column:auto}
@@ -229,28 +373,28 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
 #flightNo, #routing { text-transform: uppercase; }
 
 
-.timer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.timer-box{background:var(--panel-soft);border:1px solid var(--line);border-radius:14px;padding:10px}
-.timer-display{font-size:1.2rem;font-weight:800;color:var(--heading);margin:6px 0}
-.timer-actions{display:flex;gap:8px;flex-wrap:wrap}
-.timer-actions button{flex:1 1 calc(50% - 4px)}
-.stock-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
-.stock-col{background:var(--panel-soft);border:1px solid var(--line);border-radius:14px;padding:10px}
-.stock-col h3{font-size:.88rem;margin:0 0 8px;color:var(--heading)}
-.stock-list{display:grid;gap:8px}
-.stock-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 8px;border-radius:10px;background:var(--panel)}
-.stock-name{font-size:.84rem;font-weight:700;color:var(--text)}
-.stock-value{min-width:48px;text-align:right;font-weight:800;color:var(--heading)}
+.timer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.timer-box{background:var(--panel-soft);border:1px solid var(--line);border-radius:var(--radius-md);padding:11px;display:flex;flex-direction:column;gap:7px}
+.timer-box h2{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0;font-weight:700}
+.timer-display{font-size:1.15rem;font-weight:650;color:var(--heading);margin:0;font-variant-numeric:tabular-nums}
+.timer-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stock-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stock-col{background:var(--panel-soft);border:1px solid var(--line);border-radius:var(--radius-md);padding:11px;display:flex;flex-direction:column;gap:7px}
+.stock-col h3{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;margin:0;color:var(--muted);font-weight:700}
+.stock-list{display:grid;gap:7px}
+.stock-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--radius-sm);background:var(--panel);border:1px solid var(--line)}
+.stock-name{font-size:.8rem;font-weight:600;color:var(--text)}
+.stock-value{min-width:44px;text-align:right;font-weight:700;color:var(--heading);font-variant-numeric:tabular-nums}
 .stock-editor{display:flex;align-items:center;gap:8px}
-.stock-btn{width:30px;height:30px;padding:0;border-radius:9px;background:var(--panel-soft);color:var(--text);border:1px solid var(--line);font-weight:900}
-.stock-btn:disabled{opacity:.45;cursor:not-allowed}
-.stock-input{width:64px;text-align:center;border:1px solid var(--line);border-radius:10px;padding:6px 4px;background:var(--panel);color:var(--text);font-weight:800;-moz-appearance:textfield}
+.stock-btn{width:28px;height:28px;padding:0;border-radius:var(--radius-sm);background:var(--panel-soft);color:var(--text);border:1px solid var(--line);font-weight:800;transition:background-color .15s ease}
+.stock-btn:disabled{opacity:.4;cursor:not-allowed}
+.stock-input{width:56px;text-align:center;border:1px solid var(--line);border-radius:var(--radius-sm);padding:5px 4px;background:var(--panel);color:var(--text);font-weight:700;-moz-appearance:textfield}
 .stock-input::-webkit-outer-spin-button,.stock-input::-webkit-inner-spin-button{margin:0;-webkit-appearance:none}
-.stock-hint{margin-top:8px;font-size:.78rem;color:var(--muted)}
-.stock-summary{margin-top:10px;padding:9px 10px;border-radius:12px;background:var(--panel-soft);border:1px dashed var(--line);font-size:.82rem;color:var(--text)}
-.adjust-box{background:var(--panel-soft);border:1px solid var(--line);border-radius:14px;padding:12px}
-.adjust-qty{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px}
-.adjust-number{width:72px;text-align:center;font-size:1.1rem;font-weight:900;color:var(--heading);border:1px solid var(--line);border-radius:10px;padding:7px 6px;background:var(--panel);-moz-appearance:textfield}
+.stock-hint{margin-top:0;font-size:.75rem;color:var(--muted)}
+.stock-summary{padding:9px 11px;border-radius:var(--radius-md);background:var(--blue-light);border:1px solid color-mix(in srgb, var(--blue) 25%, var(--line));font-size:.78rem;color:var(--text)}
+.adjust-box{background:var(--panel-soft);border:1px solid var(--line);border-radius:var(--radius-lg);padding:16px;margin:0;display:flex;flex-direction:column;gap:4px}
+.adjust-qty{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:6px}
+.adjust-number{width:68px;text-align:center;font-size:1.05rem;font-weight:800;color:var(--heading);border:1px solid var(--line);border-radius:var(--radius-sm);padding:6px;background:var(--panel);-moz-appearance:textfield}
 .adjust-number::-webkit-outer-spin-button,.adjust-number::-webkit-inner-spin-button{margin:0;-webkit-appearance:none}
 .collapsible-hidden{display:none}
 @media (max-width:640px){
@@ -263,81 +407,96 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
 <body>
 <div class="app">
   <aside class="sidebar">
-    <h1>In-Flight Asistent</h1>
+    <div class="sidebar-header">
+      <h1>In-Flight Assistant</h1>
+    </div>
+    <div class="sidebar-body">
 
     <div class="card">
-      <h2>Informace o letu</h2>
-      <div class="row">
-        <div style="flex:1 1 calc(50% - 4px)">
+      <div class="card-header"><h2>Informace o letu</h2></div>
+      <div class="card-body">
+      <div class="nav-group">
+        <span class="nav-group-label">Aktivní leg</span>
+        <div class="leg-tabs" id="legTabs">
+          <button type="button" class="leg-tab" data-leg="0">LEG 1</button>
+          <button type="button" class="leg-tab" data-leg="1">LEG 2</button>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
           <label for="flightNo">Číslo letu</label>
           <input id="flightNo" type="text" inputmode="text" />
         </div>
-        <div style="flex:1 1 calc(50% - 4px)">
+        <div class="field">
           <label for="routing">Routing</label>
           <input id="routing" type="text" inputmode="text" />
         </div>
       </div>
-      <div style="height:8px"></div>
-      <div class="row">
-        <div style="flex:1 1 calc(50% - 4px)">
-          <label for="flightTime">Doba letu</label>
-          <input id="flightTime" type="time" />
-        </div>
-        <div style="flex:1 1 calc(50% - 4px)">
+      <div class="field-row">
+        <div class="field">
           <label for="paxCount">Počet cestujících</label>
           <input id="paxCount" type="text" inputmode="numeric" pattern="[0-9+]*" />
         </div>
+        <div class="field" aria-hidden="true"></div>
       </div>
-      <div style="height:8px"></div>
-      <div class="row">
-        <div style="flex:1 1 calc(50% - 4px)">
+      <div class="field-row">
+        <div class="field">
+          <label for="flightTime">Doba letu</label>
+          <input id="flightTime" type="time" />
+        </div>
+        <div class="field">
           <label for="startTime">Čas startu</label>
           <input id="startTime" type="time" />
         </div>
       </div>
-      <div style="height:10px"></div>
       <div class="timer-grid">
         <div class="timer-box">
-          <h2 style="margin:0 0 6px">Minutka</h2>
+          <h2>Minutka</h2>
           <div class="timer-display" id="countdownDisplay">--:--:--</div>
           <div class="timer-actions">
-            <button id="countdownStartBtn" class="secondary">Spustit</button>
-            <button id="countdownResetBtn" class="ghost">Reset</button>
+            <button id="countdownStartBtn" class="secondary" data-icon="play">Spustit</button>
+            <button id="countdownResetBtn" class="ghost" data-icon="refresh">Reset</button>
           </div>
         </div>
         <div class="timer-box">
-          <h2 style="margin:0 0 6px">Stopky</h2>
+          <h2>Stopky</h2>
           <div class="timer-display" id="stopwatchDisplay">--:--:--</div>
           <div class="timer-actions">
-            <button id="stopwatchStartBtn" class="secondary">Spustit</button>
-            <button id="stopwatchResetBtn" class="ghost">Reset</button>
+            <button id="stopwatchStartBtn" class="secondary" data-icon="play">Spustit</button>
+            <button id="stopwatchResetBtn" class="ghost" data-icon="refresh">Reset</button>
           </div>
         </div>
       </div>
-      <div style="height:8px"></div>
-      <label for="generalNote">Poznámka</label>
-      <textarea id="generalNote"></textarea>
+      <div class="field">
+        <label for="generalNote">Poznámka</label>
+        <textarea id="generalNote"></textarea>
+      </div>
+      </div>
     </div>
 
     <div class="card">
-      <h2>Panel nástrojů</h2>
-      <div class="row">
-        <button id="rotateBtn" class="warn">Otočit mapu</button>
-        <button id="toggle6defBtn" class="secondary">Zobrazit 6DEF</button>
+      <div class="card-header"><h2>Panel nástrojů</h2></div>
+      <div class="card-body">
+      <div class="nav-group">
+        <span class="nav-group-label">Zobrazení</span>
+      <div class="btn-row">
+        <button id="rotateBtn" class="warn" data-icon="rotate">Otočit mapu</button>
+        <button id="toggle6defBtn" class="secondary" data-icon="grid">Zobrazit 6DEF</button>
       </div>
-      <div style="height:8px"></div>
-      <div class="row">
-        <button id="themeBtn" class="secondary">Tmavý režim</button>
-        <button id="legendToggleBtn" class="secondary">Legenda</button>
+      <div class="btn-row">
+        <button id="themeBtn" class="secondary" data-icon="theme">Tmavý režim</button>
+        <button id="legendToggleBtn" class="secondary" data-icon="info">Legenda</button>
       </div>
-      <div style="height:8px"></div>
-      <div class="row">
-        <button id="toggleSeatSearchBtn" class="secondary">Vyhledání sedadla</button>
-        <button id="toggleLegendCodesBtn" class="secondary">Zkratky cateringu</button>
       </div>
-      <div style="height:8px"></div>
-      <div class="row">
-        <button id="toggleFreshStockBtn" class="secondary">Sklad freshů</button>
+      <div class="nav-group">
+        <span class="nav-group-label">Reference</span>
+      <div class="btn-row">
+        <button id="toggleSeatSearchBtn" class="secondary" data-icon="search">Vyhledání sedadla</button>
+        <button id="toggleLegendCodesBtn" class="secondary" data-icon="tag">Zkratky cateringu</button>
+      </div>
+      <div class="btn-row">
+        <button id="toggleFreshStockBtn" class="secondary" data-icon="box">Sklad freshů</button>
+      </div>
       </div>
       <div id="legendPanel" class="legend-panel">
         <div id="legendContent" class="tool-section collapsible-hidden">
@@ -367,13 +526,12 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
             </div>
           </div>
           <div class="stock-summary" id="stockSummaryPanel">Vyplň sklad freshů. K dispozici se bude počítat automaticky podle prodaných kusů.</div>
-          <div class="stock-hint">Pokud necháš vše na nule, sklad se nebude hlídat.</div>
         </div>
         <div id="seatSearchPanel" class="tool-section collapsible-hidden">
           <h2>Vyhledání sedadla</h2>
           <div class="search-grid">
             <input id="seatRowInput" type="tel" inputmode="numeric" pattern="[0-9]*" />
-            <div class="search-action"><button id="findBtn" class="ghost">Najít</button></div>
+            <div class="search-action"><button id="findBtn" class="ghost" data-icon="search">Najít</button></div>
           </div>
           <div class="letter-picker" id="letterPicker">
             <button type="button" class="secondary letter-btn" data-letter="A">A</button>
@@ -558,53 +716,59 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
         </div>
         </div>
       </div>
-      <div style="height:10px"></div>
-      <div class="row">
-        <button id="exportBtn">Exportovat data</button>
-        <button id="importBtn" class="secondary">Importovat data</button>
+      <div class="nav-group">
+        <span class="nav-group-label">Data</span>
+      <div class="btn-row">
+        <button id="exportBtn" data-icon="download">Exportovat data</button>
+        <button id="importBtn" class="secondary" data-icon="upload">Importovat data</button>
       </div>
-      <div style="height:8px"></div>
-      <div class="row">
-        <button id="newLegBtn" class="warn">Nový leg</button>
-        <button id="clearBtn" class="danger">Vymazat vše</button>
+      <div class="btn-row">
+        <button id="clearBtn" class="danger" data-icon="trash">Vymazat vše</button>
+      </div>
       </div>
       <input type="file" id="importFile" accept=".json" style="display:none" />
+      </div>
     </div>
 
     <div class="card">
-      <div class="row space-between" style="margin-bottom:8px">
-        <h2 style="margin:0">Special PAX přehled</h2>
-        <button id="specialPaxSummaryBtn" class="secondary small">Souhrn</button>
+      <div class="card-header">
+        <h2>Special PAX přehled</h2>
+        <button id="specialPaxSummaryBtn" class="secondary small" data-icon="list">Souhrn</button>
       </div>
+      <div class="card-body">
       <div class="list" id="specialPaxList"></div>
+      </div>
     </div>
 
     <div class="card">
-      <div class="row space-between" style="margin-bottom:8px">
-        <h2 style="margin:0">Přehled cateringu</h2>
-        <button id="cateringSummaryBtn" class="secondary small">Souhrn</button>
+      <div class="card-header">
+        <h2>Přehled cateringu</h2>
+        <button id="cateringSummaryBtn" class="secondary small" data-icon="list">Souhrn</button>
       </div>
+      <div class="card-body">
       <div class="list" id="cateringList"></div>
+      </div>
     </div>
 
     <div class="card">
-      <div class="row space-between" style="margin-bottom:8px">
-        <h2 style="margin:0">Fresh přehled</h2>
-        <button id="freshSummaryBtn" class="secondary small">Souhrn</button>
+      <div class="card-header">
+        <h2>Fresh přehled</h2>
+        <button id="freshSummaryBtn" class="secondary small" data-icon="list">Souhrn</button>
       </div>
+      <div class="card-body">
       <div class="list" id="freshList"></div>
+      </div>
+    </div>
     </div>
   </aside>
 
   <main class="main">
     <div class="seatmap-wrap">
       <div class="topbar">
-        <div>
-          <h2 style="font-size:1.25rem">Boeing 737-800</h2>
-        </div>
-        <div class="row">
-          <div class="muted">Směr mapy:</div>
-          <strong id="orientationLabel" style="color:var(--orange)">1 → 34 / ABC DEF</strong>
+        <h2>Boeing 737-800/MAX 8</h2>
+        <div class="orientation-pill">
+          <span class="muted">Směr mapy:</span>
+          <strong id="orientationLabel" class="orientation-value">1 → 34 / ABC DEF</strong>
         </div>
       </div>
 
@@ -615,23 +779,46 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
         <div id="tailLabel" class="aircraft-tail"></div>
       </section>
     </div>
-  
-      <div style="text-align:center;margin:16px 0 8px;font-size:0.8rem;color:var(--muted);">
-        Vytvořil Adam Tauš. Nejedná se o oficiální nástroj kontrolovaný společností.
-      </div>
+
+    <div class="app-footer">
+      Vytvořil Adam Tauš. Nejedná se o oficiální nástroj kontrolovaný společností.
+    </div>
 
   </main>
 </div>
 
+<button type="button" id="freshStockFab" class="fab" data-icon="box" aria-label="Sklad freshů"></button>
+
+<div class="modal" id="freshStockFabModal">
+  <div class="modal-box" style="width:min(560px,100%)">
+    <div class="modal-header">
+      <h2>Sklad freshů</h2>
+      <button id="closeFreshStockFabModal" class="secondary" data-icon="close">Zavřít</button>
+    </div>
+    <div class="modal-body">
+      <div class="stock-grid">
+        <div class="stock-col">
+          <h3>Sklad freshů</h3>
+          <div class="stock-list" id="stockStockListFab"></div>
+        </div>
+        <div class="stock-col">
+          <h3>K dispozici</h3>
+          <div class="stock-list" id="stockAvailableListFab"></div>
+        </div>
+      </div>
+      <div class="stock-summary" id="stockSummaryFab">Vyplň sklad freshů. K dispozici se bude počítat automaticky podle prodaných kusů.</div>
+    </div>
+  </div>
+</div>
+
 <div class="modal" id="seatModal">
   <div class="modal-box">
-    <div class="row space-between" style="margin-bottom:12px;">
-      <div>
-        <h2 id="modalTitle">Sedadlo</h2>
-      </div>
-      <button id="closeModal" class="secondary">Zavřít</button>
+    <div class="modal-header">
+      <h2 id="modalTitle">Sedadlo</h2>
+      <button id="closeModal" class="secondary" data-icon="close">Zavřít</button>
     </div>
 
+    <div class="modal-body">
     <div class="modal-grid">
       <div class="section-block mobile-order-1">
         <div class="section-title">Fresh produkty</div>
@@ -640,6 +827,25 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
       </div>
 
       <div class="section-block mobile-order-2">
+        <div class="section-title">Extra catering</div>
+        <div class="products" id="cateringProducts"></div>
+        <div class="cart" id="cateringCart"></div>
+        <div class="product">
+          <div class="product-name">Vlastní extra catering</div>
+          <input id="customCateringName" class="custom-product-input" type="text" placeholder="KÓD / NÁZEV" />
+          <div class="qty">
+            <div class="muted"><span id="customCateringQtyLabel">1</span> ks</div>
+            <div class="qty-controls">
+              <button type="button" class="qty-btn" data-action="minus" data-mode="custom-catering">−</button>
+              <div class="qty-number" id="customCateringQtyNumber">1</div>
+              <button type="button" class="qty-btn" data-action="plus" data-mode="custom-catering">+</button>
+            </div>
+          </div>
+          <button type="button" id="addCustomCateringBtn" class="secondary" data-icon="plus">Vložit</button>
+        </div>
+      </div>
+
+      <div class="section-block mobile-order-3">
         <div class="section-title">Special PAX</div>
         <div class="check-grid" id="specialPaxChecks">
           <label><input type="checkbox" value="WCHR" /> WCHR</label>
@@ -653,30 +859,9 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
           <label><input type="checkbox" value="MAAS" /> MAAS</label>
           <label><input type="checkbox" value="PETC" /> PETC</label>
         </div>
-        <div style="height:8px"></div>
-        <label for="customPax">Vlastní kód/poznámka k PAX</label>
-        <input id="customPax" type="text" />
-      </div>
-
-      <div class="section-block mobile-order-3">
-        <div class="section-title">Extra catering</div>
-        <div class="products" id="cateringProducts"></div>
-        <div class="cart" id="cateringCart"></div>
-        <div style="height:10px"></div>
-        <div class="product">
-          <div class="product-name">Vlastní extra catering</div>
-          <input id="customCateringName" class="custom-product-input" type="text" placeholder="KÓD / NÁZEV" />
-          <div style="height:8px"></div>
-          <div class="qty">
-            <div class="muted"><span id="customCateringQtyLabel">1</span> ks</div>
-            <div class="qty-controls">
-              <button type="button" class="qty-btn" data-action="minus" data-mode="custom-catering">−</button>
-              <div class="qty-number" id="customCateringQtyNumber">1</div>
-              <button type="button" class="qty-btn" data-action="plus" data-mode="custom-catering">+</button>
-            </div>
-          </div>
-          <div style="height:8px"></div>
-          <button type="button" id="addCustomCateringBtn" class="secondary">Vložit</button>
+        <div class="field">
+          <label for="customPax">Vlastní kód/poznámka k PAX</label>
+          <input id="customPax" type="text" />
         </div>
       </div>
 
@@ -685,11 +870,12 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
         <textarea id="seatNote"></textarea>
       </div>
     </div>
+    </div>
 
     <div class="sticky-actions">
-      <div class="row space-between">
-        <button id="deleteSeatData" class="danger">Smazat data sedadla</button>
-        <button id="saveSeatData">Uložit</button>
+      <div class="modal-actions">
+        <button id="deleteSeatData" class="danger" data-icon="trash">Smazat data sedadla</button>
+        <button id="saveSeatData" data-icon="check">Uložit</button>
       </div>
     </div>
   </div>
@@ -697,19 +883,22 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
 
 <div class="modal" id="summaryModal">
   <div class="modal-box" style="width:min(760px,100%)">
-    <div class="row space-between" style="margin-bottom:12px;">
+    <div class="modal-header">
       <h2 id="summaryTitle">Souhrn</h2>
-      <button id="closeSummaryModal" class="secondary">Zavřít</button>
+      <button id="closeSummaryModal" class="secondary" data-icon="close">Zavřít</button>
     </div>
+    <div class="modal-body">
     <div class="summary-modal-list" id="summaryContent"></div>
+    </div>
   </div>
 </div>
 
 <div class="modal" id="stockAdjustModal">
   <div class="modal-box" style="width:min(460px,100%)">
-    <div class="row space-between" style="margin-bottom:12px;">
+    <div class="modal-header">
       <h2>Nedostatek freshů</h2>
     </div>
+    <div class="modal-body">
     <div class="adjust-box">
       <div id="stockAdjustMessage">Tolik toho u sebe nemáš.</div>
       <div class="adjust-qty">
@@ -719,10 +908,11 @@ button.small{padding:8px 10px;font-size:.9rem;flex:0 0 calc(50% - 4px)}
       </div>
       <div class="stock-hint">Přidej do skladu tolik kusů, kolik právě potřebuješ.</div>
     </div>
+    </div>
     <div class="sticky-actions">
-      <div class="row space-between">
-        <button id="cancelStockAdjust" class="ghost">Zrušit</button>
-        <button id="confirmStockAdjust">Přidat</button>
+      <div class="modal-actions">
+        <button id="cancelStockAdjust" class="ghost" data-icon="close">Zrušit</button>
+        <button id="confirmStockAdjust" data-icon="plus">Přidat</button>
       </div>
     </div>
   </div>
@@ -736,7 +926,9 @@ const FRESH_PRODUCTS = ['Panini', 'Wrap', 'Croque', 'Bloomer', 'Hot Dog', 'Pasta
 const CATERING_PRODUCTS = ['SLML', 'SMML', 'SNML', 'SOML', 'SYML', 'SZML'];
 const HIDDEN_SEATS = ['6D','6E','6F'];
 
-let state = { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshOrderCounter:0, freshStock:{ total:{}, sold:{} }, seats:{} };
+function blankLeg(){ return { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', freshOrderCounter:0, seats:{} }; }
+let state = { activeLeg:0, legs:[blankLeg(), blankLeg()], leg2AutoFlightNo:true, leg2AutoRouting:true, generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshStock:{ total:{}, sold:{} } };
+function activeLeg(){ return state.legs[state.activeLeg]; }
 let currentSeat = null;
 let currentSummaryMode = null;
 let currentSummaryType = null;
@@ -767,9 +959,12 @@ function freshStockTrackingEnabled(){
   const stock = getFreshStockState();
   return FRESH_PRODUCTS.some(name => Number((stock.total || {})[name] || 0) > 0);
 }
+function getAllSeatsAcrossLegs(){
+  return state.legs.flatMap(leg => Object.values(leg.seats || {}));
+}
 function getSoldFreshCount(name){
   const stock = getFreshStockState();
-  const currentSeatsSold = Object.values(state.seats || {}).reduce((sum, rawData) => {
+  const currentSeatsSold = getAllSeatsAcrossLegs().reduce((sum, rawData) => {
     const data = normalizeSeatData(rawData);
     return sum + Number((data.fresh || {})[name] || 0);
   }, 0);
@@ -801,16 +996,6 @@ function getFreshShortage(delta){
     }
   }
   return null;
-}
-function getSeatFreshTotals(){
-  const totals = {};
-  Object.values(state.seats || {}).forEach(rawData => {
-    const data = normalizeSeatData(rawData);
-    Object.entries(data.fresh || {}).forEach(([name, qty]) => {
-      totals[name] = Number(totals[name] || 0) + Number(qty || 0);
-    });
-  });
-  return totals;
 }
 function persistStockOnly(){
   state.freshStock = normalizeFreshStock(state.freshStock);
@@ -890,12 +1075,13 @@ function normalizeSeatsWithFreshOrder(seats){
 
   return { seats: normalizedSeats, freshOrderCounter: maxFreshOrder };
 }
-function getSeatData(key){ return normalizeSeatData(state.seats[key]); }
+function getSeatData(key){ return normalizeSeatData(activeLeg().seats[key]); }
 function hasCounts(obj){ return Object.values(obj || {}).some(v => Number(v) > 0); }
 function totalCounts(obj){ return Object.values(obj || {}).reduce((a,b) => a + (Number(b) || 0), 0); }
 function nextFreshOrder(){
-  state.freshOrderCounter = Number(state.freshOrderCounter || 0) + 1;
-  return state.freshOrderCounter;
+  const leg = activeLeg();
+  leg.freshOrderCounter = Number(leg.freshOrderCounter || 0) + 1;
+  return leg.freshOrderCounter;
 }
 function freshOrderSort(a,b){
   const ao = Number.isFinite(Number(a.data.freshOrder)) ? Number(a.data.freshOrder) : Number.MAX_SAFE_INTEGER;
@@ -1199,17 +1385,22 @@ function renderFreshStockColumn(containerId, computed){
 function renderFreshStock(){
   renderFreshStockColumn('stockStockListPanel', false);
   renderFreshStockColumn('stockAvailableListPanel', true);
-  const summary = document.getElementById('stockSummaryPanel');
+  renderFreshStockColumn('stockStockListFab', false);
+  renderFreshStockColumn('stockAvailableListFab', true);
   const card = document.getElementById('freshStockPanel');
   const toggleBtn = document.getElementById('toggleFreshStockBtn');
   if(card) card.classList.toggle('collapsible-hidden', !state.freshStockOpen);
   if(toggleBtn) toggleBtn.textContent = state.freshStockOpen ? 'Skrýt sklad freshů' : 'Sklad freshů';
-  if(summary){
-    summary.textContent = freshStockTrackingEnabled()
-      ? 'K dispozici se počítá automaticky jako sklad mínus všechny prodané kusy.'
-      : 'Vyplň sklad freshů. Pokud necháš vše na nule, sklad se nebude kontrolovat.';
-  }
+  const summaryText = freshStockTrackingEnabled()
+    ? 'K dispozici se počítá automaticky jako sklad mínus všechny prodané kusy.'
+    : 'Vyplň sklad freshů. Pokud necháš vše na nule, sklad se nebude kontrolovat.';
+  const summary = document.getElementById('stockSummaryPanel');
+  const summaryFab = document.getElementById('stockSummaryFab');
+  if(summary) summary.textContent = summaryText;
+  if(summaryFab) summaryFab.textContent = summaryText;
 }
+function openFreshStockFabModal(){ document.getElementById('freshStockFabModal').classList.add('open'); }
+function closeFreshStockFabModal(){ document.getElementById('freshStockFabModal').classList.remove('open'); }
 function refreshStockAdjustQty(){
   const input = document.getElementById('stockAdjustQty');
   if(input) input.value = String(stockAdjustQty);
@@ -1249,8 +1440,8 @@ function commitSeatSave(nextFresh){
     freshOrder,
     note: document.getElementById('seatNote').value.trim()
   });
-  if(hasSeatData(data)) state.seats[currentSeat] = data;
-  else delete state.seats[currentSeat];
+  if(hasSeatData(data)) activeLeg().seats[currentSeat] = data;
+  else delete activeLeg().seats[currentSeat];
   persist();
   closeSeatModal();
   renderAll();
@@ -1298,7 +1489,7 @@ function saveSeatData(){
 
 function deleteSeatData(){
   if(!currentSeat) return;
-  delete state.seats[currentSeat];
+  delete activeLeg().seats[currentSeat];
   persist();
   closeSeatModal();
   renderAll();
@@ -1332,14 +1523,65 @@ function updateLegendPanel(){
 }
 
 function persist(){
-  state.flightNo = document.getElementById('flightNo').value;
-  state.routing = document.getElementById('routing').value;
-  state.flightTime = document.getElementById('flightTime').value;
-  state.paxCount = document.getElementById('paxCount').value;
-  state.startTime = document.getElementById('startTime').value;
+  const leg = activeLeg();
+  leg.flightNo = document.getElementById('flightNo').value;
+  leg.routing = document.getElementById('routing').value;
+  leg.flightTime = document.getElementById('flightTime').value;
+  leg.paxCount = document.getElementById('paxCount').value;
+  leg.startTime = document.getElementById('startTime').value;
   state.generalNote = document.getElementById('generalNote').value;
   state.freshStock = normalizeFreshStock(state.freshStock);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function loadLegIntoInputs(){
+  const leg = activeLeg();
+  document.getElementById('flightNo').value = leg.flightNo || '';
+  document.getElementById('routing').value = leg.routing || '';
+  document.getElementById('flightTime').value = leg.flightTime || '';
+  document.getElementById('paxCount').value = leg.paxCount || '';
+  document.getElementById('startTime').value = leg.startTime || '';
+}
+
+function buildLegFromParsed(parsedLeg){
+  parsedLeg = parsedLeg || {};
+  const normalized = normalizeSeatsWithFreshOrder(parsedLeg.seats || {});
+  return {
+    flightNo: parsedLeg.flightNo || '',
+    routing: parsedLeg.routing || '',
+    flightTime: parsedLeg.flightTime || '',
+    paxCount: parsedLeg.paxCount || '',
+    startTime: parsedLeg.startTime || '',
+    freshOrderCounter: Math.max(Number(parsedLeg.freshOrderCounter || 0), normalized.freshOrderCounter),
+    seats: normalized.seats
+  };
+}
+
+function buildStateFromParsed(parsed){
+  parsed = parsed || {};
+  let legs;
+  if(Array.isArray(parsed.legs) && parsed.legs.length){
+    legs = [0,1].map(i => buildLegFromParsed(parsed.legs[i]));
+  } else {
+    // legacy single-leg formát (starší export/localStorage)
+    legs = [ buildLegFromParsed(parsed), blankLeg() ];
+  }
+  const activeLegIndex = Number.isInteger(parsed.activeLeg) && parsed.activeLeg >= 0 && parsed.activeLeg < legs.length ? parsed.activeLeg : 0;
+  return {
+    activeLeg: activeLegIndex,
+    legs,
+    leg2AutoFlightNo: parsed.leg2AutoFlightNo !== undefined ? !!parsed.leg2AutoFlightNo : true,
+    leg2AutoRouting: parsed.leg2AutoRouting !== undefined ? !!parsed.leg2AutoRouting : true,
+    generalNote: parsed.generalNote || '',
+    reverse: !!parsed.reverse,
+    dark: !!parsed.dark,
+    show6def: !!parsed.show6def,
+    legendOpen: !!parsed.legendOpen,
+    legendCodesOpen: !!parsed.legendCodesOpen,
+    freshStockOpen: !!parsed.freshStockOpen,
+    seatSearchOpen: !!parsed.seatSearchOpen,
+    freshStock: normalizeFreshStock(parsed.freshStock)
+  };
 }
 
 function loadState(){
@@ -1347,18 +1589,14 @@ function loadState(){
     const raw = localStorage.getItem(STORAGE_KEY);
     if(raw){
       const parsed = JSON.parse(raw);
-      const normalized = normalizeSeatsWithFreshOrder(parsed.seats || {});
-      state = { flightNo: parsed.flightNo || '', routing: parsed.routing || '', flightTime: parsed.flightTime || '', paxCount: parsed.paxCount || '', startTime: parsed.startTime || '', generalNote: parsed.generalNote || '', reverse: !!parsed.reverse, dark: !!parsed.dark, show6def: !!parsed.show6def, legendOpen: !!parsed.legendOpen, legendCodesOpen: !!parsed.legendCodesOpen, freshStockOpen: !!parsed.freshStockOpen, seatSearchOpen: !!parsed.seatSearchOpen, freshOrderCounter: Math.max(Number(parsed.freshOrderCounter || 0), normalized.freshOrderCounter), freshStock: normalizeFreshStock(parsed.freshStock), seats: normalized.seats };
+      state = buildStateFromParsed(parsed);
     }
   }catch(e){}
-  document.getElementById('flightNo').value = state.flightNo;
-  document.getElementById('routing').value = state.routing || '';
-  document.getElementById('flightTime').value = state.flightTime || '';
-  document.getElementById('paxCount').value = state.paxCount || '';
-  document.getElementById('startTime').value = state.startTime || '';
+  loadLegIntoInputs();
   document.getElementById('generalNote').value = state.generalNote;
   applyTheme();
   updateLetterPicker();
+  updateLegTabs();
 }
 
 function updateSummary(){}
@@ -1372,7 +1610,7 @@ function seatSort(a,b){
 function renderSpecialPaxList(){
   const box = document.getElementById('specialPaxList');
   box.innerHTML = '';
-  const items = Object.entries(state.seats)
+  const items = Object.entries(activeLeg().seats)
     .map(([seat,d]) => {
       const pax = [...(d.specialPax || []), ...(((d.customPax || '').trim()) ? [(d.customPax || '').trim()] : [])];
       return { seat, pax, note: d.note || '' };
@@ -1392,7 +1630,7 @@ function renderSpecialPaxList(){
 function renderFreshList(){
   const box = document.getElementById('freshList');
   box.innerHTML = '';
-  const items = Object.entries(state.seats)
+  const items = Object.entries(activeLeg().seats)
     .map(([seat,d]) => ({ seat, data: normalizeSeatData(d) }))
     .filter(x => hasCounts(x.data.fresh))
     .sort(freshOrderSort);
@@ -1413,7 +1651,7 @@ function renderCateringList(){
   const box = document.getElementById('cateringList');
   if(!box) return;
   box.innerHTML = '';
-  const items = Object.entries(state.seats)
+  const items = Object.entries(activeLeg().seats)
     .map(([seat,d]) => ({ seat, data: normalizeSeatData(d) }))
     .filter(x => hasCounts(x.data.extraCatering))
     .sort((a,b) => seatSort(a.seat,b.seat));
@@ -1439,7 +1677,7 @@ function openSpecialPaxSummaryModal(){
   title.textContent = 'Souhrn special PAX';
 
   const aggregate = {};
-  const rows = Object.entries(state.seats)
+  const rows = Object.entries(activeLeg().seats)
     .map(([seat, d]) => {
       const pax = [...(d.specialPax || []), ...(((d.customPax || '').trim()) ? [(d.customPax || '').trim()] : [])];
       pax.forEach(code => { aggregate[code] = (aggregate[code] || 0) + 1; });
@@ -1473,7 +1711,7 @@ function openSummaryModal(type){
   let aggregateDelivered = {};
   let rows = [];
 
-  Object.entries(state.seats).forEach(([seat, rawData]) => {
+  Object.entries(activeLeg().seats).forEach(([seat, rawData]) => {
     const data = normalizeSeatData(rawData);
     const source = type === 'fresh' ? (data.fresh || {}) : (data.extraCatering || {});
     const delivered = type === 'fresh' ? (data.deliveredFresh || {}) : (data.deliveredCatering || {});
@@ -1525,7 +1763,7 @@ function toggleDeliveredItem(seat, type, product, index){
   const next = index < current ? index : index + 1;
   if(next <= 0) delete data[deliveredKey][product];
   else data[deliveredKey][product] = Math.min(total, next);
-  state.seats[seat] = normalizeSeatData(data);
+  activeLeg().seats[seat] = normalizeSeatData(data);
   persist();
   renderAll();
 }
@@ -1536,7 +1774,7 @@ function toggleDeliveredAllForSeat(seat, type){
   const source = data[sourceKey] || {};
   if(!hasCounts(source)) return;
   data[deliveredKey] = isAllDelivered(source, data[deliveredKey]) ? {} : buildDeliveredMap(source);
-  state.seats[seat] = normalizeSeatData(data);
+  activeLeg().seats[seat] = normalizeSeatData(data);
   persist();
   renderAll();
 }
@@ -1555,7 +1793,7 @@ function toggleDeliveredAll(seat, type){
       Object.entries(source).filter(([_, qty]) => Number(qty) > 0).map(([name, qty]) => [name, Number(qty)])
     );
   }
-  state.seats[seat] = normalizeSeatData(data);
+  activeLeg().seats[seat] = normalizeSeatData(data);
   persist();
   renderAll();
 }
@@ -1564,7 +1802,7 @@ function toggleDeliveredGlobal(type){
   const deliveredKey = type === 'fresh' ? 'deliveredFresh' : 'deliveredCatering';
   const aggregate = {};
   const aggregateDelivered = {};
-  Object.values(state.seats).forEach(rawData => {
+  Object.values(activeLeg().seats).forEach(rawData => {
     const data = normalizeSeatData(rawData);
     Object.entries(data[sourceKey] || {}).forEach(([name, qty]) => {
       aggregate[name] = (aggregate[name] || 0) + Number(qty || 0);
@@ -1576,14 +1814,14 @@ function toggleDeliveredGlobal(type){
   const totals = getDeliveryTotals(aggregate, aggregateDelivered);
   if(totals.total <= 0) return;
   const markAll = !totals.allDone;
-  Object.entries(state.seats).forEach(([seat, rawData]) => {
+  Object.entries(activeLeg().seats).forEach(([seat, rawData]) => {
     const data = normalizeSeatData(rawData);
     const source = data[sourceKey] || {};
     if(totalCounts(source) <= 0) return;
     data[deliveredKey] = markAll
       ? Object.fromEntries(Object.entries(source).filter(([_, qty]) => Number(qty) > 0).map(([name, qty]) => [name, Number(qty)]))
       : {};
-    state.seats[seat] = normalizeSeatData(data);
+    activeLeg().seats[seat] = normalizeSeatData(data);
   });
   persist();
   renderAll();
@@ -1594,13 +1832,13 @@ function renderOpenSummaryIfNeeded(){
   if(currentSummaryMode === 'fresh' || currentSummaryMode === 'catering') openSummaryModal(currentSummaryMode);
   else if(currentSummaryMode === 'specialPax') openSpecialPaxSummaryModal();
 }
-function renderAll(){ applyTheme(); updateLegendPanel(); updateRotateBtn(); renderSeatMap(); updateSummary(); renderFreshStock(); renderSpecialPaxList(); renderFreshList(); renderCateringList(); renderOpenSummaryIfNeeded(); }
+function renderAll(){ applyTheme(); updateLegendPanel(); updateRotateBtn(); updateLegTabs(); renderSeatMap(); updateSummary(); renderFreshStock(); renderSpecialPaxList(); renderFreshList(); renderCateringList(); renderOpenSummaryIfNeeded(); }
 
 function exportJson(){
   persist();
   const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
   const a = document.createElement('a');
-  const base = (state.flightNo || 'b738-seatmap').replace(/[^\w\-]+/g,'_');
+  const base = (activeLeg().flightNo || 'b738-seatmap').replace(/[^\w\-]+/g,'_');
   a.href = URL.createObjectURL(blob);
   a.download = `${base}.json`;
   a.click();
@@ -1612,16 +1850,12 @@ function importJson(file){
   reader.onload = e => {
     try{
       const parsed = JSON.parse(e.target.result);
-      const normalized = normalizeSeatsWithFreshOrder(parsed.seats || {});
-      state = { flightNo: parsed.flightNo || '', routing: parsed.routing || '', flightTime: parsed.flightTime || '', paxCount: parsed.paxCount || '', startTime: parsed.startTime || '', generalNote: parsed.generalNote || '', reverse: !!parsed.reverse, dark: !!parsed.dark, show6def: !!parsed.show6def, legendOpen: !!parsed.legendOpen, legendCodesOpen: !!parsed.legendCodesOpen, freshStockOpen: !!parsed.freshStockOpen, seatSearchOpen: !!parsed.seatSearchOpen, freshOrderCounter: Math.max(Number(parsed.freshOrderCounter || 0), normalized.freshOrderCounter), freshStock: normalizeFreshStock(parsed.freshStock), seats: normalized.seats };
-      document.getElementById('flightNo').value = state.flightNo;
-      document.getElementById('routing').value = state.routing || '';
-      document.getElementById('flightTime').value = state.flightTime || '';
-      document.getElementById('paxCount').value = state.paxCount || '';
-      document.getElementById('startTime').value = state.startTime || '';
+      state = buildStateFromParsed(parsed);
+      loadLegIntoInputs();
       document.getElementById('generalNote').value = state.generalNote;
       persist();
       updateLetterPicker();
+      updateLegTabs();
       renderAll();
       alert('Import hotový.');
     }catch(err){
@@ -1654,37 +1888,33 @@ function reverseRouting(value){
   if(parts.length !== 2) return text;
   return `${parts[1]}–${parts[0]}`;
 }
-function startNewLeg(){
-  if(!confirm('Opravdu chceš založit nový leg? Zachová se Sklad freshů i dosud prodané kusy.')) return;
-  const preservedStock = normalizeFreshStock(state.freshStock);
-  const soldThisLeg = getSeatFreshTotals();
-  const nextFlightNo = incrementFlightNumber(document.getElementById('flightNo').value);
-  const nextRouting = reverseRouting(document.getElementById('routing').value);
+function updateLegTabs(){
+  document.querySelectorAll('.leg-tab').forEach(btn => {
+    btn.classList.toggle('active', Number(btn.dataset.leg) === state.activeLeg);
+  });
+}
 
+function updateLeg2AutoFields(){
+  const leg1 = state.legs[0];
+  const leg2 = state.legs[1];
+  if(state.leg2AutoFlightNo){
+    leg2.flightNo = incrementFlightNumber(leg1.flightNo);
+    if(state.activeLeg === 1) document.getElementById('flightNo').value = leg2.flightNo;
+  }
+  if(state.leg2AutoRouting){
+    leg2.routing = reverseRouting(leg1.routing);
+    if(state.activeLeg === 1) document.getElementById('routing').value = leg2.routing;
+  }
+}
+
+function switchLeg(index){
+  if(index === state.activeLeg) return;
+  persist();
   if(document.getElementById('seatModal').classList.contains('open')) closeSeatModal();
   if(document.getElementById('summaryModal').classList.contains('open')) closeSummaryModal();
   if(document.getElementById('stockAdjustModal').classList.contains('open')) closeStockAdjustModal(true);
-
-  state.flightNo = nextFlightNo;
-  state.routing = nextRouting;
-  state.flightTime = '';
-  state.paxCount = '';
-  state.startTime = '';
-  state.seats = {};
-  Object.entries(soldThisLeg).forEach(([name, qty]) => {
-    preservedStock.sold[name] = Number(preservedStock.sold[name] || 0) + Number(qty || 0);
-  });
-  preservedStock.sold = normalizeCountsObject(preservedStock.sold);
-  state.freshStock = preservedStock;
-
-  document.getElementById('flightNo').value = nextFlightNo;
-  document.getElementById('routing').value = nextRouting;
-  document.getElementById('flightTime').value = '';
-  document.getElementById('paxCount').value = '';
-  document.getElementById('startTime').value = '';
-
-  resetCountdown();
-  resetStopwatch();
+  state.activeLeg = index;
+  loadLegIntoInputs();
   persist();
   renderAll();
 }
@@ -1809,11 +2039,28 @@ function updateLetterPicker(){
 
 function loadSample(){
   state = {
-    flightNo:'QS1234',
-    routing:'PRG–PMI',
-    flightTime:'02:35',
-    paxCount:'189+2',
-    startTime:'10:15',
+    activeLeg:0,
+    legs:[
+      {
+        flightNo:'QS1234',
+        routing:'PRG–PMI',
+        flightTime:'02:35',
+        paxCount:'189+2',
+        startTime:'10:15',
+        freshOrderCounter:0,
+        seats:{
+          "1A": {extraCatering:{"SLML":1}, customCatering:'', specialPax:["INF"], customPax:'', fresh:{}, note:'rodina s dítětem'},
+          "4C": {extraCatering:{}, customCatering:'', specialPax:["WCHR"], customPax:'', fresh:{}, note:'pomoc při deboardingu'},
+          "7D": {extraCatering:{"SNML":1}, deliveredCatering:{}, customCatering:'', specialPax:[], customPax:'', fresh:{"PŠ":1,"Pasta":1}, deliveredFresh:{"PŠ":1}, note:'po první službě'},
+          "17F": {extraCatering:{}, customCatering:'VIP meal', specialPax:["UMNR"], customPax:'VIP', fresh:{}, note:'předat info SCC'},
+          "21B": {extraCatering:{"SMML":1}, deliveredCatering:{"SMML":1}, customCatering:'', specialPax:[], customPax:'', fresh:{"Bloomer":2,"Bageta":1}, deliveredFresh:{"Bloomer":1}, note:'dodat najednou'},
+          "6D": {extraCatering:{}, customCatering:'', specialPax:[], customPax:'', fresh:{}, note:''}
+        }
+      },
+      blankLeg()
+    ],
+    leg2AutoFlightNo:true,
+    leg2AutoRouting:true,
     generalNote:'Ukázková data',
     reverse:false,
     dark:false,
@@ -1822,24 +2069,13 @@ function loadSample(){
     legendCodesOpen:false,
     freshStockOpen:false,
     seatSearchOpen:false,
-    freshStock:{ total:{ Panini:8, Wrap:6, Croque:4, Bloomer:6, 'Hot Dog':5, Pasta:4, Pork:3, Bageta:7 } },
-    seats:{
-      "1A": {extraCatering:{"SLML":1}, customCatering:'', specialPax:["INF"], customPax:'', fresh:{}, note:'rodina s dítětem'},
-      "4C": {extraCatering:{}, customCatering:'', specialPax:["WCHR"], customPax:'', fresh:{}, note:'pomoc při deboardingu'},
-      "7D": {extraCatering:{"SNML":1}, deliveredCatering:{}, customCatering:'', specialPax:[], customPax:'', fresh:{"PŠ":1,"Pasta":1}, deliveredFresh:{"PŠ":1}, note:'po první službě'},
-      "17F": {extraCatering:{}, customCatering:'VIP meal', specialPax:["UMNR"], customPax:'VIP', fresh:{}, note:'předat info SCC'},
-      "21B": {extraCatering:{"SMML":1}, deliveredCatering:{"SMML":1}, customCatering:'', specialPax:[], customPax:'', fresh:{"Bloomer":2,"Bageta":1}, deliveredFresh:{"Bloomer":1}, note:'dodat najednou'},
-      "6D": {extraCatering:{}, customCatering:'', specialPax:[], customPax:'', fresh:{}, note:''}
-    }
+    freshStock:{ total:{ Panini:8, Wrap:6, Croque:4, Bloomer:6, 'Hot Dog':5, Pasta:4, Pork:3, Bageta:7 } }
   };
-  document.getElementById('flightNo').value = state.flightNo;
-  document.getElementById('routing').value = state.routing || '';
-  document.getElementById('flightTime').value = state.flightTime || '';
-  document.getElementById('paxCount').value = state.paxCount || '';
-  document.getElementById('startTime').value = state.startTime || '';
+  loadLegIntoInputs();
   document.getElementById('generalNote').value = state.generalNote;
   persist();
   updateLetterPicker();
+  updateLegTabs();
   renderAll();
 }
 
@@ -1852,11 +2088,16 @@ document.getElementById('toggleLegendCodesBtn').addEventListener('click', toggle
 document.getElementById('toggle6defBtn').addEventListener('click', toggle6def);
 document.getElementById('toggleFreshStockBtn').addEventListener('click', toggleFreshStock);
 document.getElementById('toggleSeatSearchBtn').addEventListener('click', toggleSeatSearch);
-document.getElementById('newLegBtn').addEventListener('click', startNewLeg);
+document.querySelectorAll('.leg-tab').forEach(btn => {
+  btn.addEventListener('click', () => switchLeg(Number(btn.dataset.leg)));
+});
 document.getElementById('freshSummaryBtn').addEventListener('click', () => openSummaryModal('fresh'));
 document.getElementById('cateringSummaryBtn').addEventListener('click', () => openSummaryModal('catering'));
 document.getElementById('specialPaxSummaryBtn').addEventListener('click', openSpecialPaxSummaryModal);
 document.getElementById('closeSummaryModal').addEventListener('click', closeSummaryModal);
+document.getElementById('freshStockFab').addEventListener('click', openFreshStockFabModal);
+document.getElementById('closeFreshStockFabModal').addEventListener('click', closeFreshStockFabModal);
+document.getElementById('freshStockFabModal').addEventListener('click', e => { if(e.target.id === 'freshStockFabModal') closeFreshStockFabModal(); });
 document.getElementById('cancelStockAdjust').addEventListener('click', () => closeStockAdjustModal(true));
 document.getElementById('stockAdjustMinus').addEventListener('click', () => {
   stockAdjustQty = Math.max(1, stockAdjustQty - 1);
@@ -1896,7 +2137,9 @@ document.getElementById('summaryModal').addEventListener('click', e => { if(e.ta
 document.getElementById('stockAdjustModal').addEventListener('click', e => { if(e.target.id === 'stockAdjustModal') closeStockAdjustModal(true); });
 document.getElementById('flightNo').addEventListener('input', e => {
   e.target.value = e.target.value.toUpperCase();
+  if(state.activeLeg === 1) state.leg2AutoFlightNo = false;
   persist();
+  if(state.activeLeg === 0) updateLeg2AutoFields();
 });
 document.getElementById('routing').addEventListener('input', e => {
   let val = e.target.value.toUpperCase().replace(/[^A-Z]/g,'');
@@ -1904,7 +2147,9 @@ document.getElementById('routing').addEventListener('input', e => {
     val = val.slice(0,3) + '–' + val.slice(3,6);
   }
   e.target.value = val;
+  if(state.activeLeg === 1) state.leg2AutoRouting = false;
   persist();
+  if(state.activeLeg === 0) updateLeg2AutoFields();
 });
 
 document.getElementById('flightTime').addEventListener('input', persist);
@@ -2014,22 +2259,30 @@ document.addEventListener('keydown', e => {
     if(document.getElementById('seatModal').classList.contains('open')) closeSeatModal();
     if(document.getElementById('summaryModal').classList.contains('open')) closeSummaryModal();
     if(document.getElementById('stockAdjustModal').classList.contains('open')) closeStockAdjustModal(true);
+    if(document.getElementById('freshStockFabModal').classList.contains('open')) closeFreshStockFabModal();
   }
 });
 
+function updateFreshStockFabVisibility(){
+  const wrap = document.querySelector('.seatmap-wrap');
+  const fab = document.getElementById('freshStockFab');
+  if(!wrap || !fab) return;
+  fab.classList.toggle('visible', wrap.getBoundingClientRect().top < 80);
+}
+window.addEventListener('scroll', updateFreshStockFabVisibility, { passive: true });
+window.addEventListener('resize', updateFreshStockFabVisibility);
+updateFreshStockFabVisibility();
+
 document.getElementById('clearBtn').addEventListener('click', () => {
   if(confirm('Opravdu vymazat všechna data?')){
-    state = { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshOrderCounter:0, freshStock:{ total:{} }, seats:{} };
-    document.getElementById('flightNo').value = '';
-    document.getElementById('routing').value = '';
-    document.getElementById('flightTime').value = '';
-    document.getElementById('paxCount').value = '';
-    document.getElementById('startTime').value = '';
+    state = { activeLeg:0, legs:[blankLeg(), blankLeg()], leg2AutoFlightNo:true, leg2AutoRouting:true, generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshStock:{ total:{} } };
+    loadLegIntoInputs();
     document.getElementById('generalNote').value = '';
     document.getElementById('seatRowInput').value = '';
     const seatLetterInput = document.getElementById('seatLetterInput');
     if(seatLetterInput) seatLetterInput.value = '';
     updateLetterPicker();
+    updateLegTabs();
     resetCountdown();
     resetStopwatch();
     persist();
