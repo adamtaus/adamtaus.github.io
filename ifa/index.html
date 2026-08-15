@@ -280,7 +280,8 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
 .check-grid label:has(input:checked){border-color:var(--blue);background:var(--blue-light);color:var(--heading)}
 .products{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .product{border:1px solid var(--line);border-radius:var(--radius-md);padding:9px;background:var(--panel);display:flex;flex-direction:column;gap:7px}
-.product-name{font-weight:650;color:var(--heading);font-size:.85rem}
+.product-name{display:flex;align-items:center;gap:7px;font-weight:650;color:var(--heading);font-size:.85rem}
+.product-icon{width:52px;height:52px;flex:0 0 auto;object-fit:contain;border-radius:8px;background:#fff;border:1px solid var(--line);padding:3px}
 .qty{display:flex;align-items:center;justify-content:space-between;gap:8px}
 .qty-controls{display:flex;align-items:center;gap:9px}
 .qty-btn{width:32px;height:32px;border-radius:var(--radius-sm);background:var(--panel-soft);color:var(--text);border:1px solid var(--line);font-weight:700;padding:0;font-size:1.05rem;display:flex;align-items:center;justify-content:center;touch-action:manipulation;transition:background-color .15s ease,border-color .15s ease}
@@ -383,7 +384,8 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
 .stock-col h3{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;margin:0;color:var(--muted);font-weight:700}
 .stock-list{display:grid;gap:7px}
 .stock-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 9px;border-radius:var(--radius-sm);background:var(--panel);border:1px solid var(--line)}
-.stock-name{font-size:.8rem;font-weight:600;color:var(--text)}
+.stock-name{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;font-weight:600;color:var(--text)}
+.stock-icon{width:40px;height:40px;flex:0 0 auto;object-fit:contain;border-radius:7px;background:#fff;border:1px solid var(--line);padding:2px}
 .stock-value{min-width:44px;text-align:right;font-weight:700;color:var(--heading);font-variant-numeric:tabular-nums}
 .stock-editor{display:flex;align-items:center;gap:8px}
 .stock-btn{width:28px;height:28px;padding:0;border-radius:var(--radius-sm);background:var(--panel-soft);color:var(--text);border:1px solid var(--line);font-weight:800;transition:background-color .15s ease}
@@ -923,6 +925,16 @@ const ALL_ROWS = Array.from({length:34}, (_,i)=>i+1).filter(r => ![15,16].includ
 const EXIT_ROWS = [17,18];
 const STORAGE_KEY = 'b738-seatmap-clean-v6';
 const FRESH_PRODUCTS = ['Panini', 'Wrap', 'Croque', 'Bloomer', 'Hot Dog', 'Pasta', 'Pork', 'Bageta'];
+const FRESH_PRODUCT_ICONS = {
+  'Panini': 'icons/panini.png',
+  'Wrap': 'icons/wrap.png',
+  'Croque': 'icons/croque.png',
+  'Bloomer': 'icons/bloomer.png',
+  'Hot Dog': 'icons/hotdog.png',
+  'Pasta': 'icons/pasta.png',
+  'Pork': 'icons/pork.png',
+  'Bageta': 'icons/baguette.png'
+};
 const CATERING_PRODUCTS = ['SLML', 'SMML', 'SNML', 'SOML', 'SYML', 'SZML'];
 const HIDDEN_SEATS = ['6D','6E','6F'];
 
@@ -1280,8 +1292,10 @@ function renderQtyProducts(containerId, products, dataObj, mode){
     const qty = Number(dataObj[name] || 0);
     const div = document.createElement('div');
     div.className = 'product';
+    const iconSrc = mode === 'fresh' ? FRESH_PRODUCT_ICONS[name] : null;
+    const iconHtml = iconSrc ? `<img class="product-icon" src="${iconSrc}" alt="" />` : '';
     div.innerHTML = `
-      <div class="product-name">${name}</div>
+      <div class="product-name">${iconHtml}<span>${name}</span></div>
       <div class="qty">
         <div class="muted">${qty} ks</div>
         <div class="qty-controls">
@@ -1351,15 +1365,17 @@ function renderFreshStockColumn(containerId, computed){
   FRESH_PRODUCTS.forEach(name => {
     const div = document.createElement('div');
     div.className = 'stock-item';
+    const iconSrc = FRESH_PRODUCT_ICONS[name];
+    const iconHtml = iconSrc ? `<img class="stock-icon" src="${iconSrc}" alt="" />` : '';
     if(computed){
       const total = Number((stock.total || {})[name] || 0);
       const available = Number(getAvailableFreshCount(name) || 0);
       const value = total <= 0 && available <= 0 ? '—' : `${available}/${total}`;
-      div.innerHTML = `<span class="stock-name">${escapeHtml(name)}</span><span class="stock-value">${value}</span>`;
+      div.innerHTML = `<span class="stock-name">${iconHtml}${escapeHtml(name)}</span><span class="stock-value">${value}</span>`;
     } else {
       const current = Number((stock.total || {})[name] || 0);
       div.innerHTML = `
-        <span class="stock-name">${escapeHtml(name)}</span>
+        <span class="stock-name">${iconHtml}${escapeHtml(name)}</span>
         <div class="stock-editor">
           <button type="button" class="stock-btn" data-stock-name="${escapeHtml(name)}" data-stock-diff="-1" ${current <= 0 ? 'disabled' : ''}>−</button>
           <input class="stock-input" type="number" min="0" step="1" inputmode="numeric" pattern="[0-9]*" value="${current}" data-stock-input-name="${escapeHtml(name)}" />
