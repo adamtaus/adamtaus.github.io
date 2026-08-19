@@ -181,6 +181,7 @@ button.secondary:active{background:var(--panel-alt)}
 button.ghost:active{background:var(--panel-soft)}
 .delivery-chip:active{background:var(--panel-alt)}
 .leg-tab:active,.letter-btn:active{background:transparent}
+#freshSummaryFab:active{background:var(--orange-dark)}
 button:active{opacity:.9}
 button:focus-visible{outline:none;box-shadow:var(--focus-ring)}
 button:disabled{opacity:.45;cursor:not-allowed}
@@ -314,7 +315,11 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
 .fab{position:fixed;top:16px;right:16px;z-index:45;width:46px;height:46px;padding:0;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow-lg);opacity:0;transform:translateY(-10px) scale(.9);pointer-events:none;transition:opacity .2s ease,transform .2s ease}
 .fab.visible{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
 .fab[data-icon]::before{width:19px;height:19px}
-@media (max-width:640px){.fab{top:12px;right:12px;width:44px;height:44px}}
+#freshSummaryFab{top:70px;background:var(--orange)}
+@media (max-width:640px){
+  .fab{top:12px;right:12px;width:44px;height:44px}
+  #freshSummaryFab{top:64px}
+}
 @media (hover:hover) and (pointer:fine){
   button:hover{background:var(--blue-dark)}
   button.secondary:hover{background:var(--panel-alt);border-color:var(--muted)}
@@ -332,6 +337,7 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
   .letter-btn.active:hover{background:var(--orange-dark)}
   .leg-tab:hover{background:transparent}
   .stock-btn:hover:not(:disabled){background:var(--panel-alt)}
+  #freshSummaryFab:hover{background:var(--orange-dark)}
 }
 @media (max-width:1100px){.app{grid-template-columns:1fr}.sidebar{position:relative;height:auto;border-right:none}}
 @media (max-width:820px){
@@ -379,7 +385,9 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
 .timer-box h2{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0;font-weight:700}
 .timer-display{font-size:1.15rem;font-weight:650;color:var(--heading);margin:0;font-variant-numeric:tabular-nums}
 .timer-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.stock-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.stock-grid{display:flex;flex-wrap:wrap;gap:10px}
+.stock-grid .stock-col{flex:1 1 260px;min-width:0}
+.stock-grid .stock-col:last-child{flex:1 1 200px}
 .stock-col{background:var(--panel-soft);border:1px solid var(--line);border-radius:var(--radius-md);padding:11px;display:flex;flex-direction:column;gap:7px}
 .stock-col h3{font-size:.7rem;text-transform:uppercase;letter-spacing:.06em;margin:0;color:var(--muted);font-weight:700}
 .stock-list{display:grid;gap:7px}
@@ -401,7 +409,6 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
 .collapsible-hidden{display:none}
 @media (max-width:640px){
   .timer-grid{grid-template-columns:1fr}
-  .stock-grid{grid-template-columns:1fr}
 }
 
 </style>
@@ -790,6 +797,7 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
 </div>
 
 <button type="button" id="freshStockFab" class="fab" data-icon="box" aria-label="Sklad freshů"></button>
+<button type="button" id="freshSummaryFab" class="fab" data-icon="list" aria-label="Souhrn freshů"></button>
 
 <div class="modal" id="freshStockFabModal">
   <div class="modal-box" style="width:min(560px,100%)">
@@ -924,7 +932,7 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
 const ALL_ROWS = Array.from({length:34}, (_,i)=>i+1).filter(r => ![15,16].includes(r));
 const EXIT_ROWS = [17,18];
 const STORAGE_KEY = 'b738-seatmap-clean-v6';
-const FRESH_PRODUCTS = ['Panini', 'Wrap', 'Croque', 'Bloomer', 'Hot Dog', 'Pasta', 'Pork', 'Bageta'];
+const FRESH_PRODUCTS = ['Panini', 'Croque', 'Bloomer', 'Hot Dog', 'Pasta', 'Pork', 'Wrap', 'Bageta'];
 const FRESH_PRODUCT_ICONS = {
   'Panini': 'icons/panini.png',
   'Wrap': 'icons/wrap.png',
@@ -2143,6 +2151,7 @@ document.getElementById('cateringSummaryBtn').addEventListener('click', () => op
 document.getElementById('specialPaxSummaryBtn').addEventListener('click', openSpecialPaxSummaryModal);
 document.getElementById('closeSummaryModal').addEventListener('click', closeSummaryModal);
 document.getElementById('freshStockFab').addEventListener('click', openFreshStockFabModal);
+document.getElementById('freshSummaryFab').addEventListener('click', () => openSummaryModal('fresh'));
 document.getElementById('closeFreshStockFabModal').addEventListener('click', closeFreshStockFabModal);
 document.getElementById('freshStockFabModal').addEventListener('click', e => { if(e.target.id === 'freshStockFabModal') closeFreshStockFabModal(); });
 document.getElementById('cancelStockAdjust').addEventListener('click', () => closeStockAdjustModal(true));
@@ -2317,8 +2326,11 @@ document.addEventListener('keydown', e => {
 function updateFreshStockFabVisibility(){
   const wrap = document.querySelector('.seatmap-wrap');
   const fab = document.getElementById('freshStockFab');
-  if(!wrap || !fab) return;
-  fab.classList.toggle('visible', wrap.getBoundingClientRect().top < 80);
+  const summaryFab = document.getElementById('freshSummaryFab');
+  if(!wrap || !fab || !summaryFab) return;
+  const visible = wrap.getBoundingClientRect().top < 80;
+  fab.classList.toggle('visible', visible);
+  summaryFab.classList.toggle('visible', visible);
 }
 window.addEventListener('scroll', updateFreshStockFabVisibility, { passive: true });
 window.addEventListener('resize', updateFreshStockFabVisibility);
