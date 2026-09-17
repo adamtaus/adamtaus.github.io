@@ -175,12 +175,14 @@ input[type=text],textarea{
 }
 input[type=text]:focus,textarea:focus{border-color:var(--blue);box-shadow:var(--focus-ring)}
 textarea{resize:vertical;min-height:80px}
+select{width:100%;min-width:0;max-width:100%;border:1px solid var(--line);border-radius:var(--radius-md);padding:9px 11px;background:var(--panel);color:var(--text);outline:none;box-sizing:border-box;transition:border-color .15s ease,box-shadow .15s ease}
+select:focus{border-color:var(--blue);box-shadow:var(--focus-ring)}
 button{-webkit-appearance:none;appearance:none;-webkit-tap-highlight-color:transparent;border:none;border-radius:var(--radius-md);padding:9px 13px;background:var(--blue);color:#fff;font-weight:600;font-size:.86rem;cursor:pointer;letter-spacing:.003em;transition:background-color .15s ease,border-color .15s ease,box-shadow .15s ease,opacity .15s ease}
 button:active{background:var(--blue-dark)}
 button.secondary:active{background:var(--panel-alt)}
 button.ghost:active{background:var(--panel-soft)}
 .delivery-chip:active{background:var(--panel-alt)}
-.leg-tab:active,.letter-btn:active{background:transparent}
+.leg-tab:active,.letter-btn:active,.aircraft-tab:active{background:transparent}
 #freshSummaryFab:active{background:var(--orange-dark)}
 button:active{opacity:.9}
 button:focus-visible{outline:none;box-shadow:var(--focus-ring)}
@@ -238,9 +240,10 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
 .orientation-pill{display:inline-flex;align-items:center;gap:8px;background:var(--panel-soft);border:1px solid var(--line);border-radius:var(--radius-md);padding:7px 12px;font-size:.82rem}
 .orientation-pill .muted{font-size:.78rem}
 .orientation-value{color:var(--blue);font-weight:700;font-variant-numeric:tabular-nums}
-.seatmap{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-xl);padding:16px 14px 20px;overflow:hidden}
+.seatmap{--left-cols:3;--right-cols:3;background:var(--panel);border:1px solid var(--line);border-radius:var(--radius-xl);padding:16px 14px 20px;overflow:hidden}
 .aircraft-head,.aircraft-tail{text-align:center;color:var(--muted);font-size:.75rem;letter-spacing:.2em;margin:2px 0 10px;font-weight:700;text-transform:uppercase}
-.grid-header,.seat-row{display:grid;grid-template-columns:34px repeat(3,1fr) 22px repeat(3,1fr);gap:6px;align-items:center}
+.grid-header,.seat-row{display:grid;grid-template-columns:34px repeat(var(--left-cols),1fr) 22px repeat(var(--right-cols),1fr);gap:6px;align-items:center}
+.seat-empty{visibility:hidden}
 .grid-header{position:sticky;top:0;padding:8px 0;margin-bottom:2px;background:var(--panel);border-bottom:1px solid var(--line);z-index:2;color:var(--muted);font-weight:700;font-size:.76rem;letter-spacing:.08em;text-align:center}
 .rownum{text-align:center;font-weight:650;color:var(--muted);font-size:.84rem;font-variant-numeric:tabular-nums}
 .seat-row{padding:3px 0}
@@ -308,6 +311,14 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
 .leg-tab{position:relative;z-index:1;flex:1 1 0;text-align:center;background:transparent;color:var(--text);border:none;font-weight:650;letter-spacing:.02em;transition:color .2s ease}
 .leg-tab.active{background:transparent;color:#fff}
 
+.aircraft-tabs{position:relative;display:flex;gap:4px;background:var(--panel-alt);border:1px solid var(--line);border-radius:var(--radius-md);padding:4px}
+.aircraft-tabs::before{content:"";position:absolute;top:4px;bottom:4px;left:4px;width:calc(33.333% - 5.33px);background:var(--orange);border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);transition:transform .28s cubic-bezier(.4,0,.2,1)}
+.aircraft-tabs:has(.aircraft-tab:nth-child(2).active)::before{transform:translateX(calc(100% + 4px))}
+.aircraft-tabs:has(.aircraft-tab:nth-child(3).active)::before{transform:translateX(calc(200% + 8px))}
+.aircraft-tab{position:relative;z-index:1;flex:1 1 0;text-align:center;background:transparent;color:var(--text);border:none;font-weight:650;font-size:.8rem;letter-spacing:.01em;padding:9px 4px;transition:color .2s ease}
+.aircraft-tab.active{background:transparent;color:#fff}
+@media (max-width:640px){.aircraft-tab{font-size:.74rem;padding:8px 2px}}
+
 .search-grid{display:grid;grid-template-columns:1fr auto;gap:8px}
 .search-grid input{min-width:0}
 .search-action{display:flex;align-items:end;justify-content:flex-end}
@@ -336,6 +347,7 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
   .qty-btn:hover{background:var(--panel-alt);border-color:var(--line-strong)}
   .letter-btn.active:hover{background:var(--orange-dark)}
   .leg-tab:hover{background:transparent}
+  .aircraft-tab:hover{background:transparent}
   .stock-btn:hover:not(:disabled){background:var(--panel-alt)}
   #freshSummaryFab:hover{background:var(--orange-dark)}
 }
@@ -351,7 +363,7 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
   h1{font-size:1.1rem}
   .topbar{margin-bottom:12px;padding-bottom:12px}
   .seatmap{padding:10px 6px 14px;border-radius:var(--radius-lg)}
-  .grid-header,.seat-row{grid-template-columns:26px repeat(3,minmax(0,1fr)) 12px repeat(3,minmax(0,1fr));gap:4px}
+  .grid-header,.seat-row{grid-template-columns:26px repeat(var(--left-cols),minmax(0,1fr)) 12px repeat(var(--right-cols),minmax(0,1fr));gap:4px}
   .grid-header{font-size:.66rem}
   .rownum{font-size:.76rem}
   .seat{min-height:46px;max-height:46px;border-radius:var(--radius-xs);padding:4px 4px 3px}
@@ -488,6 +500,11 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
       <div class="card-body">
       <div class="nav-group">
         <span class="nav-group-label">Zobrazení</span>
+      <div class="aircraft-tabs" id="aircraftTabs">
+        <button type="button" class="aircraft-tab" data-aircraft="b738">737-800</button>
+        <button type="button" class="aircraft-tab" data-aircraft="b739">737-900</button>
+        <button type="button" class="aircraft-tab" data-aircraft="a220">A220</button>
+      </div>
       <div class="btn-row">
         <button id="rotateBtn" class="warn" data-icon="rotate">Otočit mapu</button>
         <button id="toggle6defBtn" class="secondary" data-icon="grid">Zobrazit 6DEF</button>
@@ -774,7 +791,7 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
   <main class="main">
     <div class="seatmap-wrap">
       <div class="topbar">
-        <h2>Boeing 737-800/MAX 8</h2>
+        <h2 id="aircraftTitle">Boeing 737-800/MAX 8</h2>
         <div class="orientation-pill">
           <span class="muted">Směr mapy:</span>
           <strong id="orientationLabel" class="orientation-value">1 → 34 / ABC DEF</strong>
@@ -929,8 +946,39 @@ button[data-icon="plus"]::before{-webkit-mask-image:var(--i-plus);mask-image:var
 </div>
 
 <script>
-const ALL_ROWS = Array.from({length:34}, (_,i)=>i+1).filter(r => ![15,16].includes(r));
-const EXIT_ROWS = [17,18];
+const AIRCRAFT_TYPES = {
+  b738: {
+    label: 'Boeing 737-800/MAX 8',
+    rows: Array.from({length:34}, (_,i)=>i+1).filter(r => ![15,16].includes(r)),
+    left: ['A','B','C'],
+    right: ['D','E','F'],
+    exitRows: [17,18],
+    missing: {},
+    hiddenSeats: ['6D','6E','6F'],
+    hiddenLabel: '6DEF'
+  },
+  b739: {
+    label: 'Boeing 737-900',
+    rows: Array.from({length:36}, (_,i)=>i+1),
+    left: ['A','B','C'],
+    right: ['D','E','F'],
+    exitRows: [17,18,27,28,29],
+    missing: { 27:['A','F'], 28:['A','F'] },
+    hiddenSeats: [],
+    hiddenLabel: ''
+  },
+  a220: {
+    label: 'Airbus A220-300',
+    rows: Array.from({length:30}, (_,i)=>i+1),
+    left: ['A','C'],
+    right: ['D','E','F'],
+    exitRows: [13],
+    missing: {},
+    hiddenSeats: ['1E'],
+    hiddenLabel: '1E'
+  }
+};
+function currentAircraft(){ return AIRCRAFT_TYPES[state.aircraft] || AIRCRAFT_TYPES.b738; }
 const STORAGE_KEY = 'b738-seatmap-clean-v6';
 const FRESH_PRODUCTS = ['Panini', 'Croque', 'Bloomer', 'Hot Dog', 'Pasta', 'Pork', 'Wrap', 'Bageta'];
 const FRESH_PRODUCT_ICONS = {
@@ -944,10 +992,9 @@ const FRESH_PRODUCT_ICONS = {
   'Bageta': 'icons/baguette.png'
 };
 const CATERING_PRODUCTS = ['SLML', 'SMML', 'SNML', 'SOML', 'SYML', 'SZML'];
-const HIDDEN_SEATS = ['6D','6E','6F'];
 
 function blankLeg(){ return { flightNo:'', routing:'', flightTime:'', paxCount:'', startTime:'', freshOrderCounter:0, flightTimeAuto:true, seats:{} }; }
-let state = { activeLeg:0, legs:[blankLeg(), blankLeg()], leg2AutoFlightNo:true, leg2AutoRouting:true, generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshStock:{ total:{}, sold:{} } };
+let state = { activeLeg:0, legs:[blankLeg(), blankLeg()], leg2AutoFlightNo:true, leg2AutoRouting:true, generalNote:'', reverse:false, dark:false, show6def:false, aircraft:'b738', legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshStock:{ total:{}, sold:{} } };
 function activeLeg(){ return state.legs[state.activeLeg]; }
 let currentSeat = null;
 let currentSummaryMode = null;
@@ -1211,16 +1258,18 @@ function buildDeliveryBlock(seat, data, type, isSummary){
 }
 function shorten(text, max){ text = String(text || ''); return text.length > max ? text.slice(0, max - 1) + '…' : text; }
 function escapeHtml(str){ return String(str).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#039;"); }
-function isSeatDisabled(key){ return !state.show6def && HIDDEN_SEATS.includes(key); }
+function isSeatDisabled(key){ const ac = currentAircraft(); return ac.hiddenSeats.length > 0 && !state.show6def && ac.hiddenSeats.includes(key); }
+function isSeatMissing(row, letter){ return (currentAircraft().missing[row] || []).includes(letter); }
 
-function lettersOrder(){ return state.reverse ? ['F','E','D','C','B','A'] : ['A','B','C','D','E','F']; }
-function leftLetters(){ return state.reverse ? ['F','E','D'] : ['A','B','C']; }
-function rightLetters(){ return state.reverse ? ['C','B','A'] : ['D','E','F']; }
+function leftLetters(){ const ac = currentAircraft(); return state.reverse ? [...ac.right].reverse() : ac.left; }
+function rightLetters(){ const ac = currentAircraft(); return state.reverse ? [...ac.left].reverse() : ac.right; }
 
 function renderHeader(){
   const h = document.getElementById('gridHeader');
-  const order = lettersOrder();
-  h.innerHTML = `<div></div><div>${order[0]}</div><div>${order[1]}</div><div>${order[2]}</div><div></div><div>${order[3]}</div><div>${order[4]}</div><div>${order[5]}</div>`;
+  const left = leftLetters();
+  const right = rightLetters();
+  let html = '<div></div>' + left.map(l => `<div>${l}</div>`).join('') + '<div></div>' + right.map(l => `<div>${l}</div>`).join('');
+  h.innerHTML = html;
 }
 
 function updateRotateBtn(){
@@ -1232,31 +1281,59 @@ function updateRotateBtn(){
 function renderSeatMap(){
   const container = document.getElementById('seatRows');
   container.innerHTML = '';
-  const rows = state.reverse ? [...ALL_ROWS].reverse() : ALL_ROWS;
+  const ac = currentAircraft();
+  const rows = state.reverse ? [...ac.rows].reverse() : ac.rows;
+  const left = leftLetters();
+  const right = rightLetters();
   renderHeader();
 
-  document.getElementById('orientationLabel').textContent = state.reverse ? '34 → 1 / FED CBA' : '1 → 34 / ABC DEF';
+  const seatmapEl = document.querySelector('.seatmap');
+  if(seatmapEl){
+    seatmapEl.style.setProperty('--left-cols', left.length);
+    seatmapEl.style.setProperty('--right-cols', right.length);
+  }
+
+  const aircraftTitle = document.getElementById('aircraftTitle');
+  if(aircraftTitle) aircraftTitle.textContent = ac.label;
+
+  const firstRow = ac.rows[0];
+  const lastRow = ac.rows[ac.rows.length - 1];
+  const lettersFwd = `${ac.left.join('')} ${ac.right.join('')}`;
+  const lettersRev = `${[...ac.right].reverse().join('')} ${[...ac.left].reverse().join('')}`;
+  document.getElementById('orientationLabel').textContent = state.reverse
+    ? `${lastRow} → ${firstRow} / ${lettersRev}`
+    : `${firstRow} → ${lastRow} / ${lettersFwd}`;
   document.getElementById('noseLabel').textContent = '';
   document.getElementById('tailLabel').textContent = '';
-  document.getElementById('toggle6defBtn').textContent = state.show6def ? 'Skrýt 6DEF' : 'Zobrazit 6DEF';
+  const toggle6defBtn = document.getElementById('toggle6defBtn');
+  if(toggle6defBtn){
+    toggle6defBtn.style.display = ac.hiddenSeats.length > 0 ? '' : 'none';
+    toggle6defBtn.textContent = (state.show6def ? 'Skrýt ' : 'Zobrazit ') + ac.hiddenLabel;
+  }
 
   for(const row of rows){
     const rowEl = document.createElement('div');
-    rowEl.className = 'seat-row' + (EXIT_ROWS.includes(row) ? ' exit-row' : '');
+    rowEl.className = 'seat-row' + (ac.exitRows.includes(row) ? ' exit-row' : '');
 
     const rowNum = document.createElement('div');
     rowNum.className = 'rownum';
     rowNum.textContent = row;
     rowEl.appendChild(rowNum);
 
-    leftLetters().forEach(letter => rowEl.appendChild(makeSeat(row, letter)));
+    left.forEach(letter => rowEl.appendChild(isSeatMissing(row, letter) ? makeEmptySlot() : makeSeat(row, letter)));
     const aisle = document.createElement('div');
     aisle.className = 'aisle';
     aisle.textContent = '✈';
     rowEl.appendChild(aisle);
-    rightLetters().forEach(letter => rowEl.appendChild(makeSeat(row, letter)));
+    right.forEach(letter => rowEl.appendChild(isSeatMissing(row, letter) ? makeEmptySlot() : makeSeat(row, letter)));
     container.appendChild(rowEl);
   }
+}
+
+function makeEmptySlot(){
+  const div = document.createElement('div');
+  div.className = 'seat-empty';
+  return div;
 }
 
 function makeSeat(row, letter){
@@ -1265,7 +1342,7 @@ function makeSeat(row, letter){
   const disabled = isSeatDisabled(key);
   const seat = document.createElement('button');
   seat.type = 'button';
-  seat.className = 'seat' + (EXIT_ROWS.includes(row) ? ' exit' : '') + (hasSeatData(data) ? ' has-data' : '') + (currentSeat === key ? ' selected' : '') + (disabled ? ' disabled' : '');
+  seat.className = 'seat' + (currentAircraft().exitRows.includes(row) ? ' exit' : '') + (hasSeatData(data) ? ' has-data' : '') + (currentSeat === key ? ' selected' : '') + (disabled ? ' disabled' : '');
   seat.dataset.seat = key;
   seat.setAttribute('aria-label', `Sedadlo ${key}`);
   if(disabled) seat.disabled = true;
@@ -1601,6 +1678,7 @@ function buildStateFromParsed(parsed){
     reverse: !!parsed.reverse,
     dark: !!parsed.dark,
     show6def: !!parsed.show6def,
+    aircraft: AIRCRAFT_TYPES[parsed.aircraft] ? parsed.aircraft : 'b738',
     legendOpen: !!parsed.legendOpen,
     legendCodesOpen: !!parsed.legendCodesOpen,
     freshStockOpen: !!parsed.freshStockOpen,
@@ -1619,6 +1697,7 @@ function loadState(){
   }catch(e){}
   loadLegIntoInputs();
   document.getElementById('generalNote').value = state.generalNote;
+  updateAircraftTabs();
   applyTheme();
   updateLetterPicker();
   updateLegTabs();
@@ -1857,7 +1936,7 @@ function renderOpenSummaryIfNeeded(){
   if(currentSummaryMode === 'fresh' || currentSummaryMode === 'catering') openSummaryModal(currentSummaryMode);
   else if(currentSummaryMode === 'specialPax') openSpecialPaxSummaryModal();
 }
-function renderAll(){ applyTheme(); updateLegendPanel(); updateRotateBtn(); updateLegTabs(); renderSeatMap(); updateSummary(); renderFreshStock(); renderSpecialPaxList(); renderFreshList(); renderCateringList(); renderOpenSummaryIfNeeded(); }
+function renderAll(){ applyTheme(); updateLegendPanel(); updateRotateBtn(); updateLegTabs(); updateAircraftTabs(); renderSeatMap(); updateSummary(); renderFreshStock(); renderSpecialPaxList(); renderFreshList(); renderCateringList(); renderOpenSummaryIfNeeded(); }
 
 function exportJson(){
   persist();
@@ -1878,6 +1957,7 @@ function importJson(file){
       state = buildStateFromParsed(parsed);
       loadLegIntoInputs();
       document.getElementById('generalNote').value = state.generalNote;
+      updateAircraftTabs();
       persist();
       updateLetterPicker();
       updateLegTabs();
@@ -1939,6 +2019,12 @@ function updateFlightTimeFromRouting(){
 function updateLegTabs(){
   document.querySelectorAll('.leg-tab').forEach(btn => {
     btn.classList.toggle('active', Number(btn.dataset.leg) === state.activeLeg);
+  });
+}
+
+function updateAircraftTabs(){
+  document.querySelectorAll('.aircraft-tab').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.aircraft === state.aircraft);
   });
 }
 
@@ -2120,6 +2206,7 @@ function loadSample(){
     reverse:false,
     dark:false,
     show6def:false,
+    aircraft:'b738',
     legendOpen:false,
     legendCodesOpen:false,
     freshStockOpen:false,
@@ -2128,6 +2215,7 @@ function loadSample(){
   };
   loadLegIntoInputs();
   document.getElementById('generalNote').value = state.generalNote;
+  updateAircraftTabs();
   persist();
   updateLetterPicker();
   updateLegTabs();
@@ -2141,6 +2229,23 @@ document.getElementById('themeBtn').addEventListener('click', toggleTheme);
 document.getElementById('legendToggleBtn').addEventListener('click', toggleLegend);
 document.getElementById('toggleLegendCodesBtn').addEventListener('click', toggleLegendCodes);
 document.getElementById('toggle6defBtn').addEventListener('click', toggle6def);
+document.querySelectorAll('.aircraft-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const next = btn.dataset.aircraft;
+    if(next === state.aircraft){ return; }
+    if(!confirm('Opravdu změnit typ letadla? Mapa sedadel na obou legách se vymaže, protože se liší rozložení sedadel.')){
+      return;
+    }
+    state.aircraft = next;
+    state.legs[0].seats = {};
+    state.legs[1].seats = {};
+    state.legs[0].freshOrderCounter = 0;
+    state.legs[1].freshOrderCounter = 0;
+    if(currentSeat && document.getElementById('seatModal').classList.contains('open')) closeSeatModal();
+    persist();
+    renderAll();
+  });
+});
 document.getElementById('toggleFreshStockBtn').addEventListener('click', toggleFreshStock);
 document.getElementById('toggleSeatSearchBtn').addEventListener('click', toggleSeatSearch);
 document.querySelectorAll('.leg-tab').forEach(btn => {
@@ -2338,9 +2443,10 @@ updateFreshStockFabVisibility();
 
 document.getElementById('clearBtn').addEventListener('click', () => {
   if(confirm('Opravdu vymazat všechna data?')){
-    state = { activeLeg:0, legs:[blankLeg(), blankLeg()], leg2AutoFlightNo:true, leg2AutoRouting:true, generalNote:'', reverse:false, dark:false, show6def:false, legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshStock:{ total:{} } };
+    state = { activeLeg:0, legs:[blankLeg(), blankLeg()], leg2AutoFlightNo:true, leg2AutoRouting:true, generalNote:'', reverse:false, dark:false, show6def:false, aircraft:'b738', legendOpen:false, legendCodesOpen:false, freshStockOpen:false, seatSearchOpen:false, freshStock:{ total:{} } };
     loadLegIntoInputs();
     document.getElementById('generalNote').value = '';
+    updateAircraftTabs();
     document.getElementById('seatRowInput').value = '';
     const seatLetterInput = document.getElementById('seatLetterInput');
     if(seatLetterInput) seatLetterInput.value = '';
